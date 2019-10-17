@@ -108,7 +108,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 9211)
   .settings(
     routesImport ++= Seq(
-      //  "model._"
+       "model._"
     ))
   .settings(
     scalacOptions ++= Seq(

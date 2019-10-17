@@ -17,13 +17,22 @@
 package support
 
 import javax.inject.{Inject, Singleton}
+import model.{PeriodKey, Vrn, VrtRepaymentDetailData}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) {
 
   val port = 19001
+  val headers: Seq[(String, String)] = Seq(("Content-Type", "application/json"))
+
+  def store(vrtRepaymentDetailData: VrtRepaymentDetailData)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    httpClient.POST(s"http://localhost:$port/vat-repayment-tracker-backend/store", vrtRepaymentDetailData, headers)
+
+  def find(vrn: Vrn, periodKey: PeriodKey)(implicit hc: HeaderCarrier): Future[List[VrtRepaymentDetailData]] =
+    httpClient.GET[List[VrtRepaymentDetailData]](s"http://localhost:$port/vat-repayment-tracker-backend/find/vrn/${vrn.value}/${periodKey.value}")
 
 }
