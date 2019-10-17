@@ -50,8 +50,6 @@ final class VrtRepo @Inject() (reactiveMongoComponent: ReactiveMongoComponent, c
 
   def findByVrnAndPeriodKey(vrn: Vrn, periodKey: PeriodKey): Future[List[VrtRepaymentDetailData]] = {
     find("vrn" -> vrn.value, "repaymentDetailsData.periodKey" -> periodKey.value)
-
-    this.find()
   }
 
   def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: String): Future[List[VrtRepaymentDetailData]] = {

@@ -105,7 +105,7 @@ lazy val microservice = Project(appName, file("."))
   .configs(IntegrationTest)
   .settings(integrationTestSettings(): _*)
   .settings(resolvers += Resolver.jcenterRepo)
-  .settings(PlayKeys.playDefaultPort := 9211)
+  .settings(PlayKeys.playDefaultPort := 9212)
   .settings(
     routesImport ++= Seq(
        "model._"
