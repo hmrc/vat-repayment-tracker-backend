@@ -27,7 +27,7 @@ object DesData {
 
   val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
     LocalDate.parse("2001-01-01"),
-    LocalDate.parse("2001-01-01"),
+    Option(LocalDate.parse("2001-01-01")),
     Option(LocalDate.parse("2001-01-01")),
     "18AC",
     "INITIAL",
@@ -38,7 +38,7 @@ object DesData {
 
   val repaymentDetail2: RepaymentDetailData = RepaymentDetailData(
     LocalDate.parse("2001-01-01"),
-    LocalDate.parse("2001-01-01"),
+    Option(LocalDate.parse("2001-01-01")),
     Option(LocalDate.parse("2001-01-01")),
     "18AC",
     "REPAYMENT_APPROVED",

@@ -22,7 +22,7 @@ import play.api.libs.json.{Json, OFormat}
 
 final case class RepaymentDetailData(
     returnCreationDate:     LocalDate,
-    sentForRiskingDate:     LocalDate,
+    sentForRiskingDate:     Option[LocalDate],
     lastUpdateReceivedDate: Option[LocalDate],
     periodKey:              String,
     riskingStatus:          String,
