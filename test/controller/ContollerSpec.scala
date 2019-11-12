@@ -18,12 +18,12 @@ package controller
 
 import java.time.LocalDate
 
-import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
+import model._
 import play.api.Logger
 import play.api.http.Status
 import reactivemongo.bson.BSONObjectID
 import repository.VrtRepo
-import support.{DesData, ItSpec, TestConnector}
+import support._
 
 class ContollerSpec extends ItSpec {
 
@@ -44,12 +44,20 @@ class ContollerSpec extends ItSpec {
   }
 
   "store data " in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData).futureValue
     result.status shouldBe Status.OK
     result.body shouldBe "updated 1 records"
   }
 
+  "store data testOnly" in {
+    val result = testConnector.storeTestOnly(vrtData).futureValue
+    result.status shouldBe Status.OK
+    result.body shouldBe "updated 1 records"
+  }
+
   "find data " in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData).futureValue
     result.status shouldBe Status.OK
     val findResult: List[VrtRepaymentDetailData] = testConnector.find(vrn, periodKey).futureValue
@@ -58,6 +66,7 @@ class ContollerSpec extends ItSpec {
   }
 
   "Store two records then find 1" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn2, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData).futureValue
     result.status shouldBe Status.OK
     val result2 = testConnector.store(vrtData2).futureValue
@@ -68,6 +77,7 @@ class ContollerSpec extends ItSpec {
   }
 
   "Store record twice with an update, should find most recent version" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData).futureValue
     result.status shouldBe Status.OK
     val result2 = testConnector.store(vrtData.copy(creationDate = LocalDate.now().plusDays(1))).futureValue
@@ -78,6 +88,7 @@ class ContollerSpec extends ItSpec {
   }
 
   "Store two records for the same VRN and Period Key bu different status should find 2" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData).futureValue
     result.status shouldBe Status.OK
     val result2 = testConnector.store(vrtData3).futureValue
@@ -88,7 +99,32 @@ class ContollerSpec extends ItSpec {
   }
 
   "return an empty list if record vrn and periodKey combination not found" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
     val findResult: List[VrtRepaymentDetailData] = testConnector.find(vrn, periodKey).futureValue
     findResult.size shouldBe 0
+  }
+
+  "store data , not authorised should result in 401" in {
+    AuthWireMockResponses.authFailed
+    val result = testConnector.store(vrtData).failed.futureValue
+    result.getMessage should include("Session record not found")
+  }
+
+  "Get  data, not authorised should result in 401" in {
+    AuthWireMockResponses.authFailed
+    val result = testConnector.find(vrn, periodKey).failed.futureValue
+    result.getMessage should include("Session record not found")
+  }
+
+  "Get  data, logged in but no access to VRN" in {
+    AuthWireMockResponses.authOkWithEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString, vrn = vrn2, enrolment = EnrolmentKeys.mtdVatEnrolmentKey)
+    val result = testConnector.find(vrn, periodKey).failed.futureValue
+    result.getMessage should include("You do not have access to this vrn: 2345678890")
+  }
+
+  "Get  data, logged in but no enrolments" in {
+    AuthWireMockResponses.authOkNoEnrolments(wireMockBaseUrlAsString = wireMockBaseUrlAsString)
+    val result = testConnector.find(vrn, periodKey).failed.futureValue
+    result.getMessage should include("You do not have access to this service")
   }
 }

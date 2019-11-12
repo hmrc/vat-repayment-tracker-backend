@@ -103,7 +103,8 @@ trait ItSpec
     .configure(configMap).build()
 
   def configMap = Map[String, Any](
-    "mongodb.uri " -> "mongodb://localhost:27017/vat-repayment-tracker-backend-it"
+    "mongodb.uri " -> "mongodb://localhost:27017/vat-repayment-tracker-backend-it",
+    "microservice.services.auth.port" -> WireMockSupport.port
   )
 
   def injector: Injector = fakeApplication().injector

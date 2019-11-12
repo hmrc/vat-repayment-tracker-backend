@@ -32,6 +32,9 @@ class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext
   def store(vrtRepaymentDetailData: VrtRepaymentDetailData)(implicit hc: HeaderCarrier): Future[HttpResponse] =
     httpClient.POST(s"http://localhost:$port/vat-repayment-tracker-backend/store", vrtRepaymentDetailData, headers)
 
+  def storeTestOnly(vrtRepaymentDetailData: VrtRepaymentDetailData)(implicit hc: HeaderCarrier): Future[HttpResponse] =
+    httpClient.POST(s"http://localhost:$port/vat-repayment-tracker-backend/test-only/store", vrtRepaymentDetailData, headers)
+
   def find(vrn: Vrn, periodKey: PeriodKey)(implicit hc: HeaderCarrier): Future[List[VrtRepaymentDetailData]] =
     httpClient.GET[List[VrtRepaymentDetailData]](s"http://localhost:$port/vat-repayment-tracker-backend/find/vrn/${vrn.value}/${periodKey.value}")
 
