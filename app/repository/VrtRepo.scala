@@ -18,7 +18,9 @@ package repository
 
 import javax.inject.{Inject, Singleton}
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
+import play.api.libs.json.Json
 import play.modules.reactivemongo.ReactiveMongoComponent
+import reactivemongo.api.commands.WriteResult
 import reactivemongo.api.indexes._
 import reactivemongo.bson.BSONDocument
 
@@ -55,6 +57,10 @@ final class VrtRepo @Inject() (reactiveMongoComponent: ReactiveMongoComponent, c
   def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: String): Future[List[VrtRepaymentDetailData]] = {
     find("vrn" -> vrn.value, "repaymentDetailsData.periodKey" -> periodKey.value,
       "repaymentDetailsData.riskingStatus" -> riskingStatus)
+  }
+
+  def removeByPeriodKeyForTest(periodKeys: List[PeriodKey]): Future[WriteResult] = {
+    remove("repaymentDetailsData.periodKey" -> Json.obj("$in" -> Json.toJson(periodKeys)))
   }
 
 }

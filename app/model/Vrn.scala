@@ -35,11 +35,6 @@ object Vrn {
 
   def validVrnKey(vrnKey: String): Boolean = validVrnKeys.contains(vrnKey)
 
-  def isMtdEnroled(typedVrn: TypedVrn): Boolean = typedVrn match {
-    case _: ClassicVrn => false
-    case _: MtdVrn     => true
-  }
-
 }
 
 sealed trait TypedVrn {

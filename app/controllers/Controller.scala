@@ -46,21 +46,6 @@ class Controller @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo, actions:
     }
   }
 
-  def storeRepaymentDataTestOnly(): Action[VrtRepaymentDetailData] = Action.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
-    Logger.debug(s"received ${request.body.toString}")
-    for {
-      data <- vrtRepo.findByVrnAndPeriodKeyAndRiskingStatus(request.body.vrn,
-                                                            PeriodKey(request.body.repaymentDetailsData.periodKey),
-                                                            request.body.repaymentDetailsData.riskingStatus)
-      vrtId: VrtId = if (data.size == 0) VrtId.fresh else data(0)._id.getOrElse(throw new RuntimeException("No id"))
-      result <- vrtRepo.upsert(vrtId, request.body.copy(_id = Some(vrtId)))
-
-    } yield {
-      Ok(s"updated ${result.n.toString} records")
-    }
-
-  }
-
   def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
     Logger.debug(s"received vrn ${vrn.value}, periodKey : ${periodKey.value}")
 
