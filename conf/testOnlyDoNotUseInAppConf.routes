@@ -14,4 +14,7 @@
 
 
 
-POST        /vat-repayment-tracker-backend/test-only/store                            controllers.Controller.storeRepaymentDataTestOnly()
+POST        /vat-repayment-tracker-backend/test-only/store                            controllers.TestController.storeRepaymentDataTestOnly()
+
+GET         /vat-repayment-tracker-backend/test-only/remove-test-data                 controllers.TestController.removeTestData()
+GET         /vat-repayment-tracker-backend/test-only/insert-test-data/start/:start/end/:end/rows/:rows           controllers.TestController.insertTestData(start: Int,end: Int, rows: Int)

@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 import model._
 import play.api.libs.json.Json
-import reactivemongo.api.commands.UpdateWriteResult
+import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
 import reactivemongo.bson.BSONObjectID
 import support.{DesData, ItSpec}
 
@@ -76,6 +76,16 @@ class VrtRepoSpec extends ItSpec {
     found.size shouldBe 1
   }
 
+  "removeByPeriodKeyForTest " in {
+    val vrtData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, DesData.repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailData(Some(id2), LocalDate.now(), vrn, DesData.repaymentDetail2)
+    val upserted: UpdateWriteResult = repo.upsert(id, vrtData).futureValue
+    val upserted2: UpdateWriteResult = repo.upsert(id2, vrtData2).futureValue
+    collectionSize shouldBe 2
+    val removed: WriteResult = repo.removeByPeriodKeyForTest(List(PeriodKey("18AC"))).futureValue
+    collectionSize shouldBe 0
+
+  }
   private def collectionSize: Int = {
     repo.count(Json.obj()).futureValue
   }
