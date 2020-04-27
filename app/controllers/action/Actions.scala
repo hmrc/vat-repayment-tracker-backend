@@ -17,7 +17,7 @@
 package controllers.action
 
 import com.google.inject.Inject
-import model.{Vrn, VrtRepaymentDetailData}
+import model.Vrn
 import play.api.Logger
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.AuthorisedFunctions
@@ -50,7 +50,7 @@ class Actions @Inject() (
 
   private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] = {
     request.enrolmentsVrn match {
-      case Some(typedVrn) => {
+      case Some(typedVrn) =>
         if (typedVrn.vrn.value == vrn.value) {
           Future.successful(Right(request))
         } else {
@@ -58,12 +58,10 @@ class Actions @Inject() (
           implicit val req: AuthenticatedRequest[_] = request
           Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
         }
-      }
-      case None => {
+      case None =>
         Logger.debug(s"""User logged in and passed vrn: ${vrn.value}, but have not enrolments""")
         implicit val req: AuthenticatedRequest[_] = request
         Future.successful(Left(unhappyPathResponses.unauthorised))
-      }
     }
   }
 

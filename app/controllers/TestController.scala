@@ -34,7 +34,6 @@ package controllers
 
 import java.time.LocalDate
 
-import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
 import model.des.RepaymentDetailData
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
@@ -45,6 +44,7 @@ import repository.VrtRepo
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.Random
 
 @Singleton
 class TestController @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo)(implicit ec: ExecutionContext) extends BackendController(cc) {
@@ -55,7 +55,7 @@ class TestController @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo)(impl
       data <- vrtRepo.findByVrnAndPeriodKeyAndRiskingStatus(request.body.vrn,
                                                             PeriodKey(request.body.repaymentDetailsData.periodKey),
                                                             request.body.repaymentDetailsData.riskingStatus)
-      vrtId: VrtId = if (data.size == 0) VrtId.fresh else data(0)._id.getOrElse(throw new RuntimeException("No id"))
+      vrtId: VrtId = if (data.isEmpty) VrtId.fresh else data(0)._id.getOrElse(throw new RuntimeException("No id"))
       result <- vrtRepo.upsert(vrtId, request.body.copy(_id = Some(vrtId)))
 
     } yield {
@@ -64,9 +64,9 @@ class TestController @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo)(impl
 
   }
 
-  val r = scala.util.Random
+  val r: Random.type = scala.util.Random
 
-  val date = LocalDate.now().toString
+  val date: String = LocalDate.now().toString
 
   val possibleRiskStatus = Seq("INITIAL", "SENT_FOR_RISKING", "CLAIM_QUERIED")
 
@@ -79,7 +79,7 @@ class TestController @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo)(impl
 
     for (
       result <- vrtRepo.removeByPeriodKeyForTest(possiblePeriods.toList)
-    ) yield (Ok("Test data removed"))
+    ) yield Ok("Test data removed")
 
   }
 
@@ -89,7 +89,7 @@ class TestController @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo)(impl
 
     for {
       result <- b
-    } yield (Ok(s"Inserted ${result.sum} rows "))
+    } yield Ok(s"Inserted ${result.sum} rows ")
 
   }
 
@@ -98,12 +98,12 @@ class TestController @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo)(impl
     for {
       inserted <- vrtRepo.bulkInsert(createBulkVrtRepaymentDetailData(current, rows))
 
-    } yield (inserted.n)
+    } yield inserted.n
 
   }
 
   private def createBulkVrtRepaymentDetailData(current: Int, rows: Int): Seq[VrtRepaymentDetailData] = {
-    for (n <- 1 to rows) yield (createVrtRepaymentDetailData(Vrn(s"${current}${n}")))
+    for (n <- 1 to rows) yield createVrtRepaymentDetailData(Vrn(s"${current}${n}"))
   }
 
   private def createVrtRepaymentDetailData(vrn: Vrn): VrtRepaymentDetailData = {
