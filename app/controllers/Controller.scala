@@ -21,7 +21,7 @@ import javax.inject.{Inject, Singleton}
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
 import play.api.Logger
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repository.VrtRepo
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
@@ -30,7 +30,7 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class Controller @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo, actions: Actions)(implicit executionContext: ExecutionContext) extends BackendController(cc) {
 
-  def storeRepaymentData(): Action[VrtRepaymentDetailData] = actions.securedActionStore.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
+  def storeRepaymentData(): Action[VrtRepaymentDetailData] = actions.securedActionStore().async(parse.json[VrtRepaymentDetailData]) { implicit request =>
 
     Logger.debug(s"received ${request.body.toString}")
     for {
@@ -38,7 +38,7 @@ class Controller @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo, actions:
       data <- vrtRepo.findByVrnAndPeriodKeyAndRiskingStatus(request.body.vrn,
                                                             PeriodKey(request.body.repaymentDetailsData.periodKey),
                                                             request.body.repaymentDetailsData.riskingStatus)
-      vrtId: VrtId = if (data.size == 0) VrtId.fresh else data(0)._id.getOrElse(throw new RuntimeException("No id"))
+      vrtId: VrtId = if (data.isEmpty) VrtId.fresh else data(0)._id.getOrElse(throw new RuntimeException("No id"))
       result <- vrtRepo.upsert(vrtId, request.body.copy(_id = Some(vrtId)))
 
     } yield {

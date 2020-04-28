@@ -19,7 +19,6 @@ package controller
 import java.time.LocalDate
 
 import model._
-import play.api.Logger
 import play.api.http.Status
 import reactivemongo.bson.BSONObjectID
 import repository.VrtRepo
@@ -27,17 +26,17 @@ import support._
 
 class ContollerSpec extends ItSpec {
 
-  val testConnector = injector.instanceOf[TestConnector]
+  val testConnector: TestConnector = injector.instanceOf[TestConnector]
   val vrn: Vrn = Vrn("2345678890")
   val vrn2: Vrn = Vrn("2345678891")
-  val id = VrtId(BSONObjectID.generate.stringify)
-  val id2 = VrtId(BSONObjectID.generate.stringify)
+  val id: VrtId = VrtId(BSONObjectID.generate.stringify)
+  val id2: VrtId = VrtId(BSONObjectID.generate.stringify)
   val periodKey: PeriodKey = PeriodKey("18AC")
-  val vrtData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, DesData.repaymentDetail)
-  val vrtData2 = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn2, DesData.repaymentDetail)
-  val vrtData3 = VrtRepaymentDetailData(Some(id2), LocalDate.now(), vrn, DesData.repaymentDetail.copy(riskingStatus = "SENT_FOR_RISKING"))
+  val vrtData: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, DesData.repaymentDetail)
+  val vrtData2: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn2, DesData.repaymentDetail)
+  val vrtData3: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id2), LocalDate.now(), vrn, DesData.repaymentDetail.copy(riskingStatus = "SENT_FOR_RISKING"))
 
-  val repo = injector.instanceOf[VrtRepo]
+  val repo: VrtRepo = injector.instanceOf[VrtRepo]
 
   override def beforeEach(): Unit = {
     val remove = repo.removeAll().futureValue

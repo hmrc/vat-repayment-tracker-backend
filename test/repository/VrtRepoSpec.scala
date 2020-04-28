@@ -26,13 +26,13 @@ import support.{DesData, ItSpec}
 
 class VrtRepoSpec extends ItSpec {
 
-  val repo = injector.instanceOf[VrtRepo]
+  val repo: VrtRepo = injector.instanceOf[VrtRepo]
 
   val vrn: Vrn = Vrn("2345678890")
   val vrn2: Vrn = Vrn("2345678891")
   val periodKey: PeriodKey = PeriodKey("18AC")
-  val id = VrtId(BSONObjectID.generate.stringify)
-  val id2 = VrtId(BSONObjectID.generate.stringify)
+  val id: VrtId = VrtId(BSONObjectID.generate.stringify)
+  val id2: VrtId = VrtId(BSONObjectID.generate.stringify)
 
   override def beforeEach(): Unit = {
     val remove = repo.removeAll().futureValue

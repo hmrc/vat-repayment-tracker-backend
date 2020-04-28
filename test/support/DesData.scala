@@ -65,7 +65,7 @@ object DesData {
   )
 
   val vrn: Vrn = Vrn("2345678891")
-  val id = VrtId(BSONObjectID.generate.stringify)
+  val id: VrtId = VrtId(BSONObjectID.generate.stringify)
   val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, repaymentDetail)
 
   //language=JSON
