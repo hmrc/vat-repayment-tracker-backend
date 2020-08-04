@@ -16,16 +16,17 @@
 
 package model
 
-import play.api.libs.json.Json
-import support.{DesData, UnitSpec}
+import play.api.libs.json.Json.toJson
+import support.DesData.{vrtRepaymentDetailData, vrtRepaymentDetailDataJson}
+import support.UnitSpec
 
 class VrtRepaymentDetailDataSpec extends UnitSpec {
 
   "to json" in {
-    Json.toJson(DesData.vrtRepaymentDetailData) shouldBe DesData.vrtRepaymentDetailDataJson
+    toJson(vrtRepaymentDetailData) shouldBe vrtRepaymentDetailDataJson
   }
 
   "from json" in {
-    DesData.vrtRepaymentDetailDataJson.as[VrtRepaymentDetailData] shouldBe DesData.vrtRepaymentDetailData
+    vrtRepaymentDetailDataJson.as[VrtRepaymentDetailData] shouldBe vrtRepaymentDetailData
   }
 }

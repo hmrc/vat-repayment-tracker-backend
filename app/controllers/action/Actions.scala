@@ -20,30 +20,20 @@ import com.google.inject.Inject
 import model.Vrn
 import play.api.Logger
 import play.api.mvc._
-import uk.gov.hmrc.auth.core.AuthorisedFunctions
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Actions @Inject() (
-    authoriseAction:      AuthenticatedAction,
-    af:                   AuthorisedFunctions,
-    cc:                   ControllerComponents,
-    unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
+class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
 
   def securedAction(vrn: Vrn): ActionBuilder[AuthenticatedRequest, AnyContent] = authoriseAction andThen validateVrn(vrn)
 
-  def securedActionStore(): ActionBuilder[AuthenticatedRequest, AnyContent] = {
-
-    authoriseAction
-  }
+  val securedActionStore: ActionBuilder[AuthenticatedRequest, AnyContent] = authoriseAction
 
   private def validateVrn(vrn: Vrn): ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] =
     new ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] {
 
-      override protected def refine[A](request: AuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] = {
-
+      override protected def refine[A](request: AuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
         vrnCheck(request, vrn)
-      }
 
       override protected def executionContext: ExecutionContext = ec
     }

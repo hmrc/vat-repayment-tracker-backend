@@ -16,16 +16,17 @@
 
 package model.des
 
-import play.api.libs.json.Json
-import support.{DesData, UnitSpec}
+import play.api.libs.json.Json.toJson
+import support.DesData.{repaymentDetailJson, repaymentsDetail}
+import support.UnitSpec
 
 class RepaymentDetailDataSpec extends UnitSpec {
 
   "to json" in {
-    Json.toJson(DesData.repaymentsDetail) shouldBe DesData.repaymentDetailJson
+    toJson(repaymentsDetail) shouldBe repaymentDetailJson
   }
 
   "from json" in {
-    DesData.repaymentDetailJson.as[Seq[RepaymentDetailData]] shouldBe DesData.repaymentsDetail
+    repaymentDetailJson.as[Seq[RepaymentDetailData]] shouldBe repaymentsDetail
   }
 }

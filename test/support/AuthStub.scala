@@ -20,31 +20,28 @@ import com.github.tomakehurst.wiremock.client.WireMock._
 import com.github.tomakehurst.wiremock.http.{HttpHeader, HttpHeaders}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.Vrn
+import support.WireMockSupport.wireMockBaseUrlAsString
 
-object AuthWireMockResponses {
-
+object AuthStub {
   val expectedDetail = "SessionRecordNotFound"
   val oid: String = "556737e15500005500eaf68f"
 
   val headers: HttpHeaders = new HttpHeaders(
     new HttpHeader("WWW-Authenticate", s"""MDTP detail="$expectedDetail"""")
-  // new HttpHeader("Failing-Enrolment", "SA")
   )
 
-  def authLoginStubOk: StubMapping = {
+  def authLoginStubOk(): StubMapping =
     stubFor(get(urlMatching("/auth-login-stub/gg-sign-in/*"))
       .willReturn(aResponse()
         .withStatus(200)))
-  }
 
-  def authFailed: StubMapping = {
+  def givenTheUserIsNotAuthenticated(): StubMapping =
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(401)
         .withHeaders(headers)))
-  }
 
-  def authOkNoEnrolments(affinityGroup: String = "Individual", wireMockBaseUrlAsString: String): StubMapping = {
+  def givenTheUserIsAuthenticatedButNotAuthorised(): StubMapping =
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(200)
@@ -68,14 +65,12 @@ object AuthWireMockResponses {
                "levelOfAssurance":"1",
                "previouslyLoggedInAt":"2016-06-20T09:48:37.112Z",
                "groupIdentifier": "groupId",
-               "affinityGroup": "$affinityGroup",
+               "affinityGroup": "Individual",
                "allEnrolments": []
              }
        """.stripMargin)))
 
-  }
-
-  def authOkWithEnrolments(affinityGroup: String = "Individual", wireMockBaseUrlAsString: String, vrn: Vrn, enrolment: String): StubMapping = {
+  def givenTheUserIsAuthenticatedAndAuthorised(affinityGroup: String = "Individual", vrn: Vrn, enrolment: String): StubMapping =
     stubFor(post(urlEqualTo("/auth/authorise"))
       .willReturn(aResponse()
         .withStatus(200)
@@ -114,7 +109,4 @@ object AuthWireMockResponses {
                       ]
              }
        """.stripMargin)))
-
-  }
-
 }

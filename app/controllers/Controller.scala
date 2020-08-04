@@ -18,30 +18,19 @@ package controllers
 
 import controllers.action.Actions
 import javax.inject.{Inject, Singleton}
-import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
+import model.{PeriodKey, Vrn, VrtRepaymentDetailData}
 import play.api.Logger
-import play.api.libs.json.Json
+import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repository.VrtRepo
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class Controller @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo, actions: Actions)(implicit executionContext: ExecutionContext) extends BackendController(cc) {
-
-  def storeRepaymentData(): Action[VrtRepaymentDetailData] = actions.securedActionStore().async(parse.json[VrtRepaymentDetailData]) { implicit request =>
-
-    Logger.debug(s"received ${request.body.toString}")
-    for {
-
-      data <- vrtRepo.findByVrnAndPeriodKeyAndRiskingStatus(request.body.vrn,
-                                                            PeriodKey(request.body.repaymentDetailsData.periodKey),
-                                                            request.body.repaymentDetailsData.riskingStatus)
-      vrtId: VrtId = if (data.isEmpty) VrtId.fresh else data(0)._id.getOrElse(throw new RuntimeException("No id"))
-      result <- vrtRepo.upsert(vrtId, request.body.copy(_id = Some(vrtId)))
-
-    } yield {
+class Controller @Inject() (cc: ControllerComponents, repo: VrtRepo, actions: Actions)
+  (implicit executionContext: ExecutionContext) extends VrtController(cc, repo) {
+  def storeRepaymentData(): Action[VrtRepaymentDetailData] = actions.securedActionStore.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
+    store(request.body).map{ result =>
       Ok(s"updated ${result.n.toString} records")
     }
   }
@@ -49,12 +38,8 @@ class Controller @Inject() (cc: ControllerComponents, vrtRepo: VrtRepo, actions:
   def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
     Logger.debug(s"received vrn ${vrn.value}, periodKey : ${periodKey.value}")
 
-    for {
-      data <- vrtRepo.findByVrnAndPeriodKey(vrn, periodKey)
-
-    } yield {
-      Ok(Json.toJson(data))
+    repo.findByVrnAndPeriodKey(vrn, periodKey).map { data =>
+      Ok(toJson(data))
     }
   }
-
 }

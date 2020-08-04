@@ -17,6 +17,7 @@
 package support
 
 import java.time.LocalDate
+import java.time.LocalDate.now
 
 import model.{Vrn, VrtId, VrtRepaymentDetailData}
 import model.des._
@@ -51,40 +52,41 @@ object DesData {
 
   //language=JSON
   val repaymentDetailJson: JsValue = Json.parse(
-    s"""[{
-        "returnCreationDate": "2001-01-01",
-        "sentForRiskingDate": "2001-01-01",
-        "lastUpdateReceivedDate": "2001-01-01",
-        "periodKey": "18AC",
-        "riskingStatus": "INITIAL",
-        "vatToPay_BOX5": 1000,
-        "supplementDelayDays": 1,
-        "originalPostingAmount": 100.02
-    }]
-""".stripMargin
+    s"""[
+          {
+          "returnCreationDate": "2001-01-01",
+          "sentForRiskingDate": "2001-01-01",
+          "lastUpdateReceivedDate": "2001-01-01",
+          "periodKey": "18AC",
+          "riskingStatus": "INITIAL",
+          "vatToPay_BOX5": 1000,
+          "supplementDelayDays": 1,
+          "originalPostingAmount": 100.02
+      }
+    ]""".stripMargin
   )
 
-  val vrn: Vrn = Vrn("2345678891")
-  val id: VrtId = VrtId(BSONObjectID.generate.stringify)
-  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, repaymentDetail)
+  private val vrn: Vrn = Vrn("2345678891")
+  private val id: VrtId = VrtId(BSONObjectID.generate.stringify)
+  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
 
   //language=JSON
   val vrtRepaymentDetailDataJson: JsValue = Json.parse(
     s"""{
-        "_id" : "${id.value}",
-        "creationDate": "${LocalDate.now()}",
-        "vrn": "${vrn.value}",
-        "repaymentDetailsData": {
-        "returnCreationDate": "2001-01-01",
-        "sentForRiskingDate": "2001-01-01",
-        "lastUpdateReceivedDate": "2001-01-01",
-        "periodKey": "18AC",
-        "riskingStatus": "INITIAL",
-        "vatToPay_BOX5": 1000,
-        "supplementDelayDays": 1,
-        "originalPostingAmount": 100.02
-    }
-  }""".stripMargin
+          "_id" : "${id.value}",
+          "creationDate": "${now()}",
+          "vrn": "${vrn.value}",
+          "repaymentDetailsData": {
+          "returnCreationDate": "2001-01-01",
+          "sentForRiskingDate": "2001-01-01",
+          "lastUpdateReceivedDate": "2001-01-01",
+          "periodKey": "18AC",
+          "riskingStatus": "INITIAL",
+          "vatToPay_BOX5": 1000,
+          "supplementDelayDays": 1,
+          "originalPostingAmount": 100.02
+      }
+    }""".stripMargin
   )
 }
 

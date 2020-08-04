@@ -32,24 +32,14 @@ package support
  * limitations under the License.
  */
 
-import java.time._
-import java.time.format.DateTimeFormatter
-
-import com.google.inject.{AbstractModule, Provides}
-import javax.inject.Singleton
-import org.openqa.selenium.WebDriver
-import org.openqa.selenium.htmlunit.HtmlUnitDriver
+import com.google.inject.AbstractModule
+import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
 import org.scalatest.{BeforeAndAfterEach, FreeSpecLike, Matchers}
 import org.scalatestplus.play.guice.GuiceOneServerPerTest
+import play.api.Application
 import play.api.inject.Injector
 import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
-import play.api.mvc.{AnyContentAsEmpty, Request, Result}
-import play.api.test.{CSRFTokenHelper, FakeRequest}
-import play.api.{Application, Configuration, Environment}
-import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
 import scala.concurrent.ExecutionContext
 
@@ -59,67 +49,26 @@ import scala.concurrent.ExecutionContext
 
 trait ItSpec
   extends FreeSpecLike
-  with RichMatchers
+  with ScalaFutures
   with BeforeAndAfterEach
   with GuiceOneServerPerTest
   with WireMockSupport
   with Matchers {
+  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
-  lazy val frozenZonedDateTime: ZonedDateTime = {
-    val formatter = DateTimeFormatter.ISO_DATE_TIME
-    LocalDateTime.parse("2018-11-02T16:28:55.185", formatter).atZone(ZoneId.of("Europe/London"))
-  }
-
-  implicit lazy val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
-
-  lazy val servicesConfig: ServicesConfig = fakeApplication().injector.instanceOf[ServicesConfig]
-  lazy val config: Configuration = fakeApplication().injector.instanceOf[Configuration]
-  lazy val env: Environment = fakeApplication().injector.instanceOf[Environment]
-  lazy val overridingsModule: AbstractModule = new AbstractModule {
-
-    override def configure(): Unit = ()
-
-    @Provides
-    @Singleton
-    def clock: Clock = {
-      val fixedInstant = LocalDateTime.parse(frozenTimeString).toInstant(ZoneOffset.UTC)
-      Clock.fixed(fixedInstant, ZoneId.systemDefault)
-    }
-  }
-  val baseUrl: String = s"http://localhost:$WireMockSupport.port"
+  lazy val injector: Injector = fakeApplication().injector
 
   override implicit val patienceConfig: PatienceConfig = PatienceConfig(
     timeout  = scaled(Span(3, Seconds)),
     interval = scaled(Span(300, Millis)))
 
-  implicit val emptyHC: HeaderCarrier = HeaderCarrier()
-  val webdriverUr: String = s"http://localhost:$port"
-  val connector: TestConnector = injector.instanceOf[TestConnector]
-
-  def httpClient: HttpClient = fakeApplication().injector.instanceOf[HttpClient]
-
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
-    .overrides(GuiceableModule.fromGuiceModules(Seq(overridingsModule)))
-    .configure(configMap).build()
-
-  def configMap: Map[String, Any] = Map[String, Any](
-    "mongodb.uri " -> "mongodb://localhost:27017/vat-repayment-tracker-backend-it",
-    "microservice.services.auth.port" -> WireMockSupport.port
-  )
-
-  def injector: Injector = fakeApplication().injector
-
-  def frozenTimeString: String = "2027-11-02T16:33:51.880"
-
-  def fakeRequest: Request[AnyContentAsEmpty.type] = CSRFTokenHelper.addCSRFToken(FakeRequest())
-
-  def status(of: Result): Int = of.header.status
-
-  protected implicit val webDriver: WebDriver = new HtmlUnitDriver(false)
-
-  def goToViaPath(path: String): Unit = webDriver.get(s"$webdriverUr$path")
-
-  implicit val request: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
+    .overrides(GuiceableModule.fromGuiceModules(Seq(new AbstractModule {
+      override def configure(): Unit = ()
+    })))
+    .configure(Map[String, Any](
+      "mongodb.uri " -> "mongodb://localhost:27017/vat-repayment-tracker-backend-it",
+      "microservice.services.auth.port" -> WireMockSupport.port
+    )).build()
 }
 

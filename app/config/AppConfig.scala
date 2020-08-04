@@ -17,16 +17,12 @@
 package config
 
 import javax.inject.Inject
-import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-case class AppConfig(
-    appName: String
-) {
+case class AppConfig(appName: String) {
 
   @Inject
-  def this(config: Configuration, servicesConfig: ServicesConfig) = this(
+  def this(servicesConfig: ServicesConfig) = this(
     appName = servicesConfig.getString("appName")
   )
-
 }
