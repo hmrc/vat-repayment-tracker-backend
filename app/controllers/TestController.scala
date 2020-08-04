@@ -50,7 +50,7 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
   extends VrtController(cc, repo) {
 
   private val r: Random.type = scala.util.Random
-  private val date: String = now().toString
+  private def date: String = now().toString
 
   val possibleRiskStatus = Seq("INITIAL", "SENT_FOR_RISKING", "CLAIM_QUERIED")
 
@@ -60,9 +60,7 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
   )
 
   def storeRepaymentDataTestOnly(): Action[VrtRepaymentDetailData] = Action.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
-    store(request.body).map { result =>
-      Ok(s"updated ${result.n.toString} records")
-    }
+    store()
   }
 
   def removeTestData(): Action[AnyContent] = Action.async {

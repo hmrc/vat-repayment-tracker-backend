@@ -19,7 +19,7 @@ package controllers
 import javax.inject.Inject
 import model.{PeriodKey, VrtId, VrtRepaymentDetailData}
 import play.api.Logger
-import play.api.mvc.ControllerComponents
+import play.api.mvc.{ControllerComponents, Request}
 import repository.VrtRepo
 import uk.gov.hmrc.play.bootstrap.controller.BackendController
 
@@ -27,18 +27,19 @@ import scala.concurrent.ExecutionContext
 
 abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)
   (implicit executionContext: ExecutionContext) extends BackendController(cc) {
-  private[controllers] def store(repaymentData: VrtRepaymentDetailData) = {
-    Logger.debug(s"received ${repaymentData.toString}")
-
+  private[controllers] def store()(implicit request: Request[VrtRepaymentDetailData]) = {
+    val repaymentData: VrtRepaymentDetailData = request.body
     val periodKey = PeriodKey(repaymentData.repaymentDetailsData.periodKey)
     val riskingStatus = repaymentData.repaymentDetailsData.riskingStatus
+
+    Logger.debug(s"received ${repaymentData.toString}")
 
     for {
       data <- repo.findByVrnAndPeriodKeyAndRiskingStatus(repaymentData.vrn, periodKey, riskingStatus)
       vrtId = data.headOption.fold(VrtId.fresh)(_._id.getOrElse(throw new RuntimeException("No id")))
       result <- repo.upsert(vrtId, repaymentData.copy(_id = Some(vrtId)))
     } yield {
-      result
+      Ok(s"updated ${result.n.toString} records")
     }
   }
 }

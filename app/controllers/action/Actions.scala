@@ -23,22 +23,22 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
+class Actions @Inject() (authorisedAction: AuthorisedAction, unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
 
-  def securedAction(vrn: Vrn): ActionBuilder[AuthenticatedRequest, AnyContent] = authoriseAction andThen validateVrn(vrn)
+  def authorised(vrn: Vrn): ActionBuilder[AuthorisedRequest, AnyContent] = authorisedAction andThen validateVrn(vrn)
 
-  val securedActionStore: ActionBuilder[AuthenticatedRequest, AnyContent] = authoriseAction
+  val authorised: ActionBuilder[AuthorisedRequest, AnyContent] = authorisedAction
 
-  private def validateVrn(vrn: Vrn): ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] =
-    new ActionRefiner[AuthenticatedRequest, AuthenticatedRequest] {
+  private def validateVrn(vrn: Vrn): ActionRefiner[AuthorisedRequest, AuthorisedRequest] =
+    new ActionRefiner[AuthorisedRequest, AuthorisedRequest] {
 
-      override protected def refine[A](request: AuthenticatedRequest[A]): Future[Either[Result, AuthenticatedRequest[A]]] =
+      override protected def refine[A](request: AuthorisedRequest[A]): Future[Either[Result, AuthorisedRequest[A]]] =
         vrnCheck(request, vrn)
 
       override protected def executionContext: ExecutionContext = ec
     }
 
-  private def vrnCheck[A](request: AuthenticatedRequest[A], vrn: Vrn): Future[Either[Result, AuthenticatedRequest[A]]] = {
+  private def vrnCheck[A](request: AuthorisedRequest[A], vrn: Vrn): Future[Either[Result, AuthorisedRequest[A]]] = {
     request.enrolmentsVrn match {
       case Some(typedVrn) =>
         if (typedVrn.vrn.value == vrn.value) {

@@ -22,7 +22,7 @@ import model.{TypedVrn, Vrn}
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 
-final class AuthenticatedRequest[A](val request: Request[A], val enrolments: Enrolments) extends WrappedRequest[A](request) {
+final class AuthorisedRequest[A](val request: Request[A], val enrolments: Enrolments) extends WrappedRequest[A](request) {
 
   val enrolmentsVrn: Option[TypedVrn] =
     enrolments.enrolments.collectFirst {
