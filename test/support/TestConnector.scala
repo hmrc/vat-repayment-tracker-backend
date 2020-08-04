@@ -18,6 +18,7 @@ package support
 
 import javax.inject.{Inject, Singleton}
 import model.{PeriodKey, Vrn, VrtRepaymentDetailData}
+import uk.gov.hmrc.http.HttpReads.Implicits.{readRaw, readFromJson}
 import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
 import uk.gov.hmrc.play.bootstrap.http.HttpClient
 
@@ -37,5 +38,4 @@ class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext
 
   def find(vrn: Vrn, periodKey: PeriodKey)(implicit hc: HeaderCarrier): Future[List[VrtRepaymentDetailData]] =
     httpClient.GET[List[VrtRepaymentDetailData]](s"http://localhost:$port/vat-repayment-tracker-backend/find/vrn/${vrn.value}/${periodKey.value}")
-
 }

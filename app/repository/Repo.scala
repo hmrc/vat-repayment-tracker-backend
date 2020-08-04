@@ -23,13 +23,8 @@ import uk.gov.hmrc.mongo.ReactiveRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class Repo[A, ID](
-    collectionName:         String,
-    reactiveMongoComponent: ReactiveMongoComponent)(implicit manifest: Manifest[A],
-                                                    mid:              Manifest[ID],
-                                                    domainFormat:     OFormat[A],
-                                                    idFormat:         Format[ID],
-                                                    executionContext: ExecutionContext)
+abstract class Repo[A, ID](collectionName: String, reactiveMongoComponent: ReactiveMongoComponent)
+  (implicit domainFormat: OFormat[A], idFormat: Format[ID], executionContext: ExecutionContext)
   extends ReactiveRepository[A, ID](
     collectionName,
     reactiveMongoComponent.mongoConnector.db,

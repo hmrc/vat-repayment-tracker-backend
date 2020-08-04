@@ -30,12 +30,12 @@ import scala.concurrent.ExecutionContext
 class Controller @Inject() (cc: ControllerComponents, repo: VrtRepo, actions: Actions)
   (implicit executionContext: ExecutionContext) extends VrtController(cc, repo) {
   def storeRepaymentData(): Action[VrtRepaymentDetailData] = actions.securedActionStore.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
-    store(request.body).map{ result =>
+    store(request.body).map { result =>
       Ok(s"updated ${result.n.toString} records")
     }
   }
 
-  def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions.securedAction(vrn).async { implicit request =>
+  def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions.securedAction(vrn).async {
     Logger.debug(s"received vrn ${vrn.value}, periodKey : ${periodKey.value}")
 
     repo.findByVrnAndPeriodKey(vrn, periodKey).map { data =>

@@ -45,14 +45,11 @@ class Actions @Inject() (authoriseAction: AuthenticatedAction, unhappyPathRespon
           Future.successful(Right(request))
         } else {
           Logger.debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${typedVrn.vrn.value}""")
-          implicit val req: AuthenticatedRequest[_] = request
           Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
         }
       case None =>
         Logger.debug(s"""User logged in and passed vrn: ${vrn.value}, but have not enrolments""")
-        implicit val req: AuthenticatedRequest[_] = request
         Future.successful(Left(unhappyPathResponses.unauthorised))
     }
   }
-
 }

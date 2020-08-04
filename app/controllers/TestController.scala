@@ -60,16 +60,16 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
   )
 
   def storeRepaymentDataTestOnly(): Action[VrtRepaymentDetailData] = Action.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
-    store(request.body).map{ result =>
+    store(request.body).map { result =>
       Ok(s"updated ${result.n.toString} records")
     }
   }
 
-  def removeTestData(): Action[AnyContent] = Action.async { implicit request =>
+  def removeTestData(): Action[AnyContent] = Action.async {
     repo.removeByPeriodKeyForTest(possiblePeriods.toList).map(_ => Ok("Test data removed"))
   }
 
-  def insertTestData(start: Int, end: Int, rows: Int): Action[AnyContent] = Action.async { implicit request =>
+  def insertTestData(start: Int, end: Int, rows: Int): Action[AnyContent] = Action.async {
     Future.sequence(for (n <- start to end) yield insertRows(n, rows)).map { result =>
       Ok(s"Inserted ${result.sum} rows ")
     }

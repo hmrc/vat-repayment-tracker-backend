@@ -106,14 +106,13 @@ class ControllerSpec extends ItSpec with Status {
     findResult.size shouldBe 0
   }
 
-  "store data , not authorised should result in 401" in {
-    givenTheUserIsNotAuthenticated
-    val result = testConnector.store(vrtData).failed.futureValue
-    result.getMessage should include("Session record not found")
+  "store data, not authorised should result in 401" in {
+    givenTheUserIsNotAuthenticated()
+    testConnector.store(vrtData).futureValue.status shouldBe 401
   }
 
   "Get data, not authorised should result in 401" in {
-    givenTheUserIsNotAuthenticated
+    givenTheUserIsNotAuthenticated()
     val result = testConnector.find(vrn, periodKey).failed.futureValue
     result.getMessage should include("Session record not found")
   }
