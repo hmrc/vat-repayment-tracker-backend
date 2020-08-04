@@ -16,24 +16,20 @@
 
 package controllers.action
 
+import model.EnrolmentKeys.{mtdVatEnrolmentKey, vatDecEnrolmentKey, vatVarEnrolmentKey}
 import model.TypedVrn.{ClassicVrn, MtdVrn}
-import model.{EnrolmentKeys, TypedVrn, Vrn}
+import model.{TypedVrn, Vrn}
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 
-final class AuthenticatedRequest[A](val request:    Request[A],
-                                    val enrolments: Enrolments
-) extends WrappedRequest[A](request) {
+final class AuthorisedRequest[A](val request: Request[A], val enrolments: Enrolments) extends WrappedRequest[A](request) {
 
-  val enrolmentsVrn: Option[TypedVrn] = {
-
+  val enrolmentsVrn: Option[TypedVrn] =
     enrolments.enrolments.collectFirst {
-      case Enrolment(key, identifiers, _, _) if key == EnrolmentKeys.mtdVatEnrolmentKey =>
+      case Enrolment(key, identifiers, _, _) if key == mtdVatEnrolmentKey =>
         identifiers.collectFirst { case EnrolmentIdentifier(k, vrn) if Vrn.validVrnKey(k) => MtdVrn(Vrn(vrn)) }
 
-      case Enrolment(key, identifiers, _, _) if Set(EnrolmentKeys.vatDecEnrolmentKey, EnrolmentKeys.vatVarEnrolmentKey).contains(key) =>
+      case Enrolment(key, identifiers, _, _) if Set(vatDecEnrolmentKey, vatVarEnrolmentKey).contains(key) =>
         identifiers.collectFirst { case EnrolmentIdentifier(k, vrn) if Vrn.validVrnKey(k) => ClassicVrn(Vrn(vrn)) }
     }.flatten
-  }
-
 }

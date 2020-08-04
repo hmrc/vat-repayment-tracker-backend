@@ -62,5 +62,4 @@ final class VrtRepo @Inject() (reactiveMongoComponent: ReactiveMongoComponent, c
   def removeByPeriodKeyForTest(periodKeys: List[PeriodKey]): Future[WriteResult] = {
     remove("repaymentDetailsData.periodKey" -> Json.obj("$in" -> Json.toJson(periodKeys)))
   }
-
 }

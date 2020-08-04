@@ -16,26 +16,27 @@
 
 package repository
 
-import java.time.LocalDate
+import java.time.LocalDate.now
 
 import model._
 import play.api.libs.json.Json
-import reactivemongo.api.commands.{UpdateWriteResult, WriteResult}
+import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.bson.BSONObjectID
-import support.{DesData, ItSpec}
+import support.DesData.{repaymentDetail, repaymentDetail2}
+import support.ItSpec
 
 class VrtRepoSpec extends ItSpec {
+  private lazy val repo = injector.instanceOf[VrtRepo]
 
-  val repo: VrtRepo = injector.instanceOf[VrtRepo]
-
-  val vrn: Vrn = Vrn("2345678890")
-  val vrn2: Vrn = Vrn("2345678891")
-  val periodKey: PeriodKey = PeriodKey("18AC")
-  val id: VrtId = VrtId(BSONObjectID.generate.stringify)
-  val id2: VrtId = VrtId(BSONObjectID.generate.stringify)
+  private val vrn = Vrn("2345678890")
+  private val vrn2 = Vrn("2345678891")
+  private val periodKey = PeriodKey("18AC")
+  private val id = VrtId(BSONObjectID.generate.stringify)
+  private val id2 = VrtId(BSONObjectID.generate.stringify)
 
   override def beforeEach(): Unit = {
-    val remove = repo.removeAll().futureValue
+    repo.removeAll().futureValue
+    ()
   }
 
   "Count should be 0 with empty repo" in {
@@ -43,51 +44,48 @@ class VrtRepoSpec extends ItSpec {
   }
 
   "ensure indexes are created" in {
-
-    val remove = repo.drop.futureValue
-    val ensure = repo.ensureIndexes.futureValue
+    repo.drop.futureValue
+    repo.ensureIndexes.futureValue
     repo.collection.indexesManager.list().futureValue.size shouldBe 5
   }
 
   "insert a record" in {
-    val vrtData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, DesData.repaymentDetail)
+    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
     val upserted: UpdateWriteResult = repo.upsert(id, vrtData).futureValue
     upserted.n shouldBe 1
 
   }
 
   "find records by vrn and periodKey" in {
-    val vrtData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, DesData.repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(Some(id2), LocalDate.now(), vrn2, DesData.repaymentDetail)
-    val upserted: UpdateWriteResult = repo.upsert(id, vrtData).futureValue
-    val upserted2: UpdateWriteResult = repo.upsert(id2, vrtData2).futureValue
+    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn2, repaymentDetail)
+    repo.upsert(id, vrtData).futureValue
+    repo.upsert(id2, vrtData2).futureValue
     collectionSize shouldBe 2
     val found: List[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKey(vrn, periodKey).futureValue
     found.size shouldBe 1
   }
 
   "find records by vrn, periodKey and riskingStatus" in {
-    val vrtData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, DesData.repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(Some(id2), LocalDate.now(), vrn, DesData.repaymentDetail2)
-    val upserted: UpdateWriteResult = repo.upsert(id, vrtData).futureValue
-    val upserted2: UpdateWriteResult = repo.upsert(id2, vrtData2).futureValue
+    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail2)
+    repo.upsert(id, vrtData).futureValue
+    repo.upsert(id2, vrtData2).futureValue
     collectionSize shouldBe 2
     val found: List[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, "REPAYMENT_APPROVED").futureValue
     found.size shouldBe 1
   }
 
   "removeByPeriodKeyForTest " in {
-    val vrtData = VrtRepaymentDetailData(Some(id), LocalDate.now(), vrn, DesData.repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(Some(id2), LocalDate.now(), vrn, DesData.repaymentDetail2)
-    val upserted: UpdateWriteResult = repo.upsert(id, vrtData).futureValue
-    val upserted2: UpdateWriteResult = repo.upsert(id2, vrtData2).futureValue
+    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail2)
+    repo.upsert(id, vrtData).futureValue
+    repo.upsert(id2, vrtData2).futureValue
     collectionSize shouldBe 2
-    val removed: WriteResult = repo.removeByPeriodKeyForTest(List(PeriodKey("18AC"))).futureValue
+    repo.removeByPeriodKeyForTest(List(PeriodKey("18AC"))).futureValue
     collectionSize shouldBe 0
 
   }
-  private def collectionSize: Int = {
-    repo.count(Json.obj()).futureValue
-  }
 
+  private def collectionSize: Int = repo.count(Json.obj()).futureValue
 }
