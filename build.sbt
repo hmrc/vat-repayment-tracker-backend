@@ -6,6 +6,9 @@ import wartremover.{Wart, wartremoverErrors, wartremoverExcluded}
 
 val appName = "vat-repayment-tracker-backend"
 
+val scalaV = "2.12.12"
+scalaVersion := scalaV
+
 val akkaVersion     = "2.5.23"
 val akkaHttpVersion = "10.0.15"
 
@@ -25,7 +28,6 @@ lazy val microservice = Project(appName, file("."))
     routesGenerator                  :=  InjectedRoutesGenerator,
     evictionWarningOptions in update :=  EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
   )
-  .settings(scalaVersion := "2.12.11")
   .settings(majorVersion := 1)
   .settings(ScalariformSettings())
   .settings(ScoverageSettings())
@@ -60,6 +62,7 @@ lazy val microservice = Project(appName, file("."))
       "-unchecked",
       "-language:implicitConversions",
       "-language:reflectiveCalls",
-      "-Ypartial-unification" //required by cats
+      "-Ypartial-unification", //required by cats
+      "-Ywarn-unused:-imports"
     )
   )
