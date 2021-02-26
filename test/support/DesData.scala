@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,10 @@
 
 package support
 
+import model.des.RiskingStatus.{INITIAL, REPAYMENT_APPROVED}
+
 import java.time.LocalDate
 import java.time.LocalDate.now
-
 import model.{Vrn, VrtId, VrtRepaymentDetailData}
 import model.des._
 import play.api.libs.json.{JsValue, Json}
@@ -31,7 +32,7 @@ object DesData {
     Option(LocalDate.parse("2001-01-01")),
     Option(LocalDate.parse("2001-01-01")),
     "18AC",
-    "INITIAL",
+    INITIAL,
     1000,
     Option(1),
     100.02
@@ -42,7 +43,7 @@ object DesData {
     Option(LocalDate.parse("2001-01-01")),
     Option(LocalDate.parse("2001-01-01")),
     "18AC",
-    "REPAYMENT_APPROVED",
+    REPAYMENT_APPROVED,
     1000,
     Option(1),
     100.02

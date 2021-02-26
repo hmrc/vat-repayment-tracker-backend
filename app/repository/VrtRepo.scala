@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package repository
+
+import model.des.RiskingStatus
 
 import javax.inject.{Inject, Singleton}
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
@@ -54,7 +56,7 @@ final class VrtRepo @Inject() (reactiveMongoComponent: ReactiveMongoComponent, c
     find("vrn" -> vrn.value, "repaymentDetailsData.periodKey" -> periodKey.value)
   }
 
-  def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: String): Future[List[VrtRepaymentDetailData]] = {
+  def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: RiskingStatus): Future[List[VrtRepaymentDetailData]] = {
     find("vrn" -> vrn.value, "repaymentDetailsData.periodKey" -> periodKey.value,
       "repaymentDetailsData.riskingStatus" -> riskingStatus)
   }

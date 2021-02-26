@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package controller
 
 import java.time.LocalDate.now
-
 import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model._
+import model.des.RiskingStatus.SENT_FOR_RISKING
 import play.api.http.Status
 import reactivemongo.bson.BSONObjectID
 import repository.VrtRepo
@@ -38,7 +38,7 @@ class ControllerSpec extends ItSpec with Status {
   private val periodKey = PeriodKey("18AC")
   private val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
   private val vrtData2 = VrtRepaymentDetailData(Some(id), now(), vrn2, repaymentDetail)
-  private val vrtData3 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail.copy(riskingStatus = "SENT_FOR_RISKING"))
+  private val vrtData3 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail.copy(riskingStatus = SENT_FOR_RISKING))
 
   private lazy val testConnector = injector.instanceOf[TestConnector]
   private lazy val repo = injector.instanceOf[VrtRepo]
