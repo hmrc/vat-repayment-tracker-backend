@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,8 @@
 package repository
 
 import java.time.LocalDate.now
-
 import model._
+import model.des.RiskingStatus.REPAYMENT_APPROVED
 import play.api.libs.json.Json
 import reactivemongo.api.commands.UpdateWriteResult
 import reactivemongo.bson.BSONObjectID
@@ -72,7 +72,7 @@ class VrtRepoSpec extends ItSpec {
     repo.upsert(id, vrtData).futureValue
     repo.upsert(id2, vrtData2).futureValue
     collectionSize shouldBe 2
-    val found: List[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, "REPAYMENT_APPROVED").futureValue
+    val found: List[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, REPAYMENT_APPROVED).futureValue
     found.size shouldBe 1
   }
 

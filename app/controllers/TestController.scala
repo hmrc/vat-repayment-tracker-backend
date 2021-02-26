@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,9 +34,9 @@ package controllers
 
 import java.time.LocalDate
 import java.time.LocalDate.now
-
 import javax.inject.{Inject, Singleton}
 import model.des.RepaymentDetailData
+import model.des.RiskingStatus._
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import reactivemongo.bson.BSONObjectID
@@ -52,7 +52,7 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
   private val r: Random.type = scala.util.Random
   private def date: String = now().toString
 
-  val possibleRiskStatus = Seq("INITIAL", "SENT_FOR_RISKING", "CLAIM_QUERIED")
+  val possibleRiskStatus = Seq(INITIAL, SENT_FOR_RISKING, CLAIM_QUERIED)
 
   val possiblePeriods = Seq(PeriodKey("16AA"), PeriodKey("16AB"), PeriodKey("16AC"), PeriodKey("16AD"), PeriodKey("16AE"), PeriodKey("16AF"), PeriodKey("16AG"), PeriodKey("16AH"), PeriodKey("16AI"), PeriodKey("16AJ"), PeriodKey("16AK"), PeriodKey("16AL"),
                             PeriodKey("16YA"), PeriodKey("16YB"), PeriodKey("16YC"), PeriodKey("16YD"), PeriodKey("16YE"), PeriodKey("16YF"), PeriodKey("16YG"), PeriodKey("16YH"), PeriodKey("16YI"), PeriodKey("16YJ"), PeriodKey("16YK"), PeriodKey("16YL"),
