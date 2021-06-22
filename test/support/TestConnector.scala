@@ -18,24 +18,32 @@ package support
 
 import javax.inject.{Inject, Singleton}
 import model.{PeriodKey, Vrn, VrtRepaymentDetailData}
-import uk.gov.hmrc.http.HttpReads.Implicits.{readRaw, readFromJson}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse}
-import uk.gov.hmrc.play.bootstrap.http.HttpClient
-
-import scala.concurrent.{ExecutionContext, Future}
+import play.api.Application
+import play.api.libs.json.Json
+import play.api.mvc.Result
+import play.api.test.FakeRequest
+import play.api.test.Helpers.{GET, POST, route, writeableOf_AnyContentAsEmpty, writeableOf_AnyContentAsJson}
+import scala.concurrent.Future
 
 @Singleton
-class TestConnector @Inject() (httpClient: HttpClient)(implicit executionContext: ExecutionContext) {
+class TestConnector @Inject() (app: Application) {
 
-  val port = 19001
-  val headers: Seq[(String, String)] = Seq(("Content-Type", "application/json"))
+  def store(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] = {
+    val req = FakeRequest(POST, "/vat-repayment-tracker-backend/store").withJsonBody(Json.toJson(vrtRepaymentDetailData))
 
-  def store(vrtRepaymentDetailData: VrtRepaymentDetailData)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.POST(s"http://localhost:$port/vat-repayment-tracker-backend/store", vrtRepaymentDetailData, headers)
+    route(app, req).getOrElse(Future.failed(new Exception))
+  }
 
-  def storeTestOnly(vrtRepaymentDetailData: VrtRepaymentDetailData)(implicit hc: HeaderCarrier): Future[HttpResponse] =
-    httpClient.POST(s"http://localhost:$port/vat-repayment-tracker-backend/test-only/store", vrtRepaymentDetailData, headers)
+  def storeTestOnly(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] = {
+    val req = FakeRequest(POST, "/vat-repayment-tracker-backend/test-only/store").withJsonBody(Json.toJson(vrtRepaymentDetailData))
 
-  def find(vrn: Vrn, periodKey: PeriodKey)(implicit hc: HeaderCarrier): Future[List[VrtRepaymentDetailData]] =
-    httpClient.GET[List[VrtRepaymentDetailData]](s"http://localhost:$port/vat-repayment-tracker-backend/find/vrn/${vrn.value}/${periodKey.value}")
+    route(app, req).getOrElse(Future.failed(new Exception))
+  }
+
+  def find(vrn: Vrn, periodKey: PeriodKey): Future[Result] = {
+    val req = FakeRequest(GET, s"/vat-repayment-tracker-backend/find/vrn/${vrn.value}/${periodKey.value}")
+
+    route(app, req).getOrElse(Future.failed(new Exception))
+  }
+
 }

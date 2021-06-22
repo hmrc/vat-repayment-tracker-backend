@@ -34,7 +34,7 @@ class Controller @Inject() (cc: ControllerComponents, repo: VrtRepo, actions: Ac
   }
 
   def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions.authorised(vrn).async {
-    Logger.debug(s"received vrn ${vrn.value}, periodKey : ${periodKey.value}")
+    Logger("application").debug(s"received vrn ${vrn.value}, periodKey : ${periodKey.value}")
 
     repo.findByVrnAndPeriodKey(vrn, periodKey).map { data =>
       Ok(toJson(data))
