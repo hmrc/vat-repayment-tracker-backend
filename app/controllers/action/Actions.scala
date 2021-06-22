@@ -44,11 +44,11 @@ class Actions @Inject() (authorisedAction: AuthorisedAction, unhappyPathResponse
         if (typedVrn.vrn.value == vrn.value) {
           Future.successful(Right(request))
         } else {
-          Logger.debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${typedVrn.vrn.value}""")
+          Logger("application").debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${typedVrn.vrn.value}""")
           Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
         }
       case None =>
-        Logger.debug(s"""User logged in and passed vrn: ${vrn.value}, but have not enrolments""")
+        Logger("application").debug(s"""User logged in and passed vrn: ${vrn.value}, but have not enrolments""")
         Future.successful(Left(unhappyPathResponses.unauthorised))
     }
   }

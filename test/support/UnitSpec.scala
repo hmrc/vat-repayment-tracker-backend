@@ -16,9 +16,10 @@
 
 package support
 
-import org.scalatest.{FreeSpecLike, Matchers}
+import org.scalatest.freespec.AnyFreeSpecLike
+import org.scalatest.matchers.should.Matchers
 
 /**
  * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
  */
-trait UnitSpec extends FreeSpecLike with Matchers
+trait UnitSpec extends AnyFreeSpecLike with Matchers

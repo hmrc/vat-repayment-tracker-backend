@@ -21,7 +21,7 @@ import model.{PeriodKey, VrtId, VrtRepaymentDetailData}
 import play.api.Logger
 import play.api.mvc.{ControllerComponents, Request}
 import repository.VrtRepo
-import uk.gov.hmrc.play.bootstrap.controller.BackendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.ExecutionContext
 
@@ -32,7 +32,7 @@ abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)
     val periodKey = PeriodKey(repaymentData.repaymentDetailsData.periodKey)
     val riskingStatus = repaymentData.repaymentDetailsData.riskingStatus
 
-    Logger.debug(s"received ${repaymentData.toString}")
+    Logger("application").debug(s"received ${repaymentData.toString}")
 
     for {
       data <- repo.findByVrnAndPeriodKeyAndRiskingStatus(repaymentData.vrn, periodKey, riskingStatus)

@@ -27,6 +27,7 @@ import support.AuthStub._
 import support.DesData.repaymentDetail
 import support._
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.auth.core.SessionRecordNotFound
 
 class ControllerSpec extends ItSpec with Status {
   implicit val emptyHC: HeaderCarrier = HeaderCarrier()
@@ -48,84 +49,91 @@ class ControllerSpec extends ItSpec with Status {
     ()
   }
 
+  import play.api.test.Helpers._
+
   "store data " in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
-    val result = testConnector.store(vrtData).futureValue
-    result.status shouldBe OK
-    result.body shouldBe "updated 1 records"
+    val result = testConnector.store(vrtData)
+    status(result) shouldBe OK
+    contentAsString(result) shouldBe "updated 1 records"
   }
 
   "store data testOnly" in {
-    val result = testConnector.storeTestOnly(vrtData).futureValue
-    result.status shouldBe OK
-    result.body shouldBe "updated 1 records"
+    val result = testConnector.storeTestOnly(vrtData)
+    status(result) shouldBe OK
+    contentAsString(result) shouldBe "updated 1 records"
   }
 
   "find data " in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
-    val result = testConnector.store(vrtData).futureValue
-    result.status shouldBe OK
-    val findResult: List[VrtRepaymentDetailData] = testConnector.find(vrn, periodKey).futureValue
-    findResult.size shouldBe 1
+    val result = testConnector.store(vrtData)
+    status(result) shouldBe OK
+    val findResult = testConnector.find(vrn, periodKey)
+    contentAsJson(findResult).as[List[VrtRepaymentDetailData]].size shouldBe 1
   }
 
   "Store two records then find 1" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn2, enrolment = mtdVatEnrolmentKey)
-    val result = testConnector.store(vrtData).futureValue
-    result.status shouldBe OK
-    val result2 = testConnector.store(vrtData2).futureValue
-    result2.status shouldBe OK
-    val findResult: List[VrtRepaymentDetailData] = testConnector.find(vrn2, periodKey).futureValue
-    findResult.size shouldBe 1
+    val result = testConnector.store(vrtData)
+    status(result) shouldBe OK
+    val result2 = testConnector.store(vrtData2)
+    status(result2) shouldBe OK
+    val findResult = testConnector.find(vrn2, periodKey)
+    contentAsJson(findResult).as[List[VrtRepaymentDetailData]].size shouldBe 1
   }
 
   "Store record twice with an update, should find most recent version" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
-    val result = testConnector.store(vrtData).futureValue
-    result.status shouldBe OK
-    val result2 = testConnector.store(vrtData.copy(creationDate = now().plusDays(1))).futureValue
-    result2.status shouldBe OK
-    val findResult: List[VrtRepaymentDetailData] = testConnector.find(vrn, periodKey).futureValue
-    findResult.size shouldBe 1
-    findResult.head.creationDate shouldBe now.plusDays(1)
+    val result = testConnector.store(vrtData)
+    status(result) shouldBe OK
+    val result2 = testConnector.store(vrtData.copy(creationDate = now().plusDays(1)))
+    status(result2) shouldBe OK
+    val findResult = testConnector.find(vrn, periodKey)
+    val lst = contentAsJson(findResult).as[List[VrtRepaymentDetailData]]
+    lst.size shouldBe 1
+    lst.head.creationDate shouldBe now.plusDays(1)
   }
 
   "Store two records for the same VRN and Period Key bu different status should find 2" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
-    val result = testConnector.store(vrtData).futureValue
-    result.status shouldBe OK
-    val result2 = testConnector.store(vrtData3).futureValue
-    result2.status shouldBe OK
-    val findResult: List[VrtRepaymentDetailData] = testConnector.find(vrn, periodKey).futureValue
-    findResult.size shouldBe 2
+    val result = testConnector.store(vrtData)
+    status(result) shouldBe OK
+    val result2 = testConnector.store(vrtData3)
+    status(result2) shouldBe OK
+    val findResult = testConnector.find(vrn, periodKey)
+    contentAsJson(findResult).as[List[VrtRepaymentDetailData]].size shouldBe 2
   }
 
   "return an empty list if record vrn and periodKey combination not found" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
-    val findResult: List[VrtRepaymentDetailData] = testConnector.find(vrn, periodKey).futureValue
-    findResult.size shouldBe 0
+    val findResult = testConnector.find(vrn, periodKey)
+    contentAsJson(findResult).as[List[VrtRepaymentDetailData]].size shouldBe 0
   }
 
   "store data, not authorised should result in 401" in {
     givenTheUserIsNotAuthenticated()
-    testConnector.store(vrtData).futureValue.status shouldBe 401
+    givenTheUserIsNotAuthenticated()
+    the[SessionRecordNotFound] thrownBy {
+      status(testConnector.find(vrn, periodKey)) shouldBe 401
+    } should have message ("Session record not found")
   }
 
   "Get data, not authorised should result in 401" in {
     givenTheUserIsNotAuthenticated()
-    val result = testConnector.find(vrn, periodKey).failed.futureValue
-    result.getMessage should include("Session record not found")
+    the[SessionRecordNotFound] thrownBy {
+      status(testConnector.find(vrn, periodKey)) shouldBe 401
+    } should have message ("Session record not found")
   }
 
   "Get data, logged in but no access to VRN" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn2, enrolment = mtdVatEnrolmentKey)
-    val result = testConnector.find(vrn, periodKey).failed.futureValue
-    result.getMessage should include("You do not have access to this vrn: 2345678890")
+    val result = testConnector.find(vrn, periodKey)
+    contentAsString(result) should include("You do not have access to this vrn: 2345678890")
   }
 
   "Get data, logged in but no enrolments" in {
     givenTheUserIsAuthenticatedButNotAuthorised()
-    val result = testConnector.find(vrn, periodKey).failed.futureValue
-    result.getMessage should include("You do not have access to this service")
+    val result = testConnector.find(vrn, periodKey)
+    contentAsString(result) should include("You do not have access to this service")
   }
 }

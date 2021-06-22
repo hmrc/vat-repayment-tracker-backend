@@ -2,27 +2,16 @@
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
 import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
-import wartremover.{Wart, wartremoverErrors, wartremoverExcluded}
+import wartremover.Wart
 
 val appName = "vat-repayment-tracker-backend"
 
-val scalaV = "2.12.12"
-scalaVersion := scalaV
-
-val akkaVersion     = "2.5.23"
-val akkaHttpVersion = "10.0.15"
-
-dependencyOverrides += "com.typesafe.akka" %% "akka-stream"    % akkaVersion
-dependencyOverrides += "com.typesafe.akka" %% "akka-protobuf"  % akkaVersion
-dependencyOverrides += "com.typesafe.akka" %% "akka-slf4j"     % akkaVersion
-dependencyOverrides += "com.typesafe.akka" %% "akka-actor"     % akkaVersion
-dependencyOverrides += "com.typesafe.akka" %% "akka-http-core" % akkaHttpVersion
+scalaVersion := "2.12.12"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
-    resolvers                        ++= Seq(Resolver.bintrayRepo("hmrc", "releases"), Resolver.jcenterRepo),
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
     retrieveManaged                  :=  true,
     routesGenerator                  :=  InjectedRoutesGenerator,
@@ -33,8 +22,8 @@ lazy val microservice = Project(appName, file("."))
   .settings(ScoverageSettings())
   .settings(WartRemoverSettings.wartRemoverError)
   .settings(WartRemoverSettings.wartRemoverWarning)
-  .settings(wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference))
-  .settings(wartremoverExcluded ++=
+  .settings(wartremover.WartRemover.autoImport.wartremoverErrors in(Test, compile) --= Seq(Wart.Any, Wart.Equals, Wart.Null, Wart.NonUnitStatements, Wart.PublicInference))
+  .settings(wartremover.WartRemover.autoImport.wartremoverExcluded ++=
     routes.in(Compile).value ++
       (baseDirectory.value / "test").get ++
       Seq(sourceManaged.value / "main" / "sbt-buildinfo" / "BuildInfo.scala"))
