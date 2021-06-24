@@ -55,3 +55,4 @@ lazy val microservice = Project(appName, file("."))
       "-Ywarn-unused:-imports"
     )
   )
+  .settings(scalacOptions in Compile -= "utf8")
