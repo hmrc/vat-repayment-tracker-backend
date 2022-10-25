@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,21 @@
 
 package model
 import controllers.ValueClassBinder.valueClassBinder
+import org.bson.types.ObjectId
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.mvc.PathBindable
-import reactivemongo.bson.BSONObjectID
+import repository.Id
+import uk.gov.hmrc.mongo.play.json.formats.MongoFormats
 
-final case class VrtId(value: String)
+final case class VrtId(value: ObjectId) extends Id
 
 object VrtId {
-  implicit val format: Format[VrtId] = implicitly[Format[String]].inmap(VrtId(_), _.value)
-  implicit val journeyIdBinder: PathBindable[VrtId] = valueClassBinder(_.value)
-  def fresh: VrtId = VrtId(BSONObjectID.generate.stringify)
+  implicit val format: Format[VrtId] = MongoFormats.objectIdFormat.inmap(VrtId(_), _.value)
+  implicit val journeyIdBinder: PathBindable[VrtId] = valueClassBinder(_.value.toString)
+
+  def apply(hexString: String): VrtId = VrtId(new ObjectId(hexString))
+
+  def fresh: VrtId = VrtId(ObjectId.get())
 }
 

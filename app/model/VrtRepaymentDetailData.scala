@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,22 @@
 
 package model
 
-import java.time.LocalDate
-
-import play.api.libs.json.{Json, OFormat}
+import java.time.LocalDateTime
+import play.api.libs.json.{Format, Json, OFormat}
 import model.des.RepaymentDetailData
+import repository.HasId
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
-final case class VrtRepaymentDetailData(_id: Option[VrtId], creationDate: LocalDate, vrn: Vrn, repaymentDetailsData: RepaymentDetailData)
+final case class VrtRepaymentDetailData(
+    _id:                  VrtId,
+    creationDate:         LocalDateTime,
+    vrn:                  Vrn,
+    repaymentDetailsData: RepaymentDetailData
+) extends HasId[VrtId]
 
 object VrtRepaymentDetailData {
   implicit val format: OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
+
+  implicit val localDateTimeFormat: Format[LocalDateTime] = MongoJavatimeFormats.localDateTimeFormat
 
 }

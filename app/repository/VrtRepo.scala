@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,48 +20,65 @@ import model.des.RiskingStatus
 
 import javax.inject.{Inject, Singleton}
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
+import org.mongodb.scala.model.Filters.{and, equal}
+import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
+import org.mongodb.scala.result
 import play.api.libs.json.Json
-import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.commands.WriteResult
-import reactivemongo.api.indexes._
-import reactivemongo.bson.BSONDocument
+import uk.gov.hmrc.mongo.MongoComponent
 
+import java.util.concurrent.TimeUnit
 import scala.concurrent.{ExecutionContext, Future}
 
-@Singleton
-final class VrtRepo @Inject() (reactiveMongoComponent: ReactiveMongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
-  extends Repo[VrtRepaymentDetailData, VrtId]("repayment-details", reactiveMongoComponent) {
-
-  override def indexes: Seq[Index] = Seq(
-    Index(
-      key  = Seq("vrn" -> IndexType.Ascending),
-      name = Some("vrnIdx")
-    ),
-    Index(
-      key  = Seq("repaymentDetailsData.periodKey" -> IndexType.Ascending),
-      name = Some("periodkeyIdx")
-    ),
-    Index(
-      key  = Seq("repaymentDetailsData.riskingStatus" -> IndexType.Ascending),
-      name = Some("riskingStatusIdx")
-    ),
-    Index(
-      key     = Seq("createdOn" -> IndexType.Ascending),
-      name    = Some("createdOnIdx"),
-      options = BSONDocument("expireAfterSeconds" -> config.expireMongoPayments.toSeconds)
+object VrtRepo {
+  def indexes(cacheTtlInSeconds: Long): Seq[IndexModel] = Seq(
+    IndexModel(
+      keys         = Indexes.ascending("creationDate"),
+      indexOptions = IndexOptions().expireAfter(cacheTtlInSeconds, TimeUnit.SECONDS)
     )
   )
+}
 
-  def findByVrnAndPeriodKey(vrn: Vrn, periodKey: PeriodKey): Future[List[VrtRepaymentDetailData]] = {
-    find("vrn" -> vrn.value, "repaymentDetailsData.periodKey" -> periodKey.value)
+@Singleton
+final class VrtRepo @Inject() (
+    mongoComponent: MongoComponent,
+    config:         VrtRepoConfig
+)(implicit ec: ExecutionContext)
+  extends Repo[VrtId, VrtRepaymentDetailData](
+    collectionName = "repayment-details",
+    mongoComponent = mongoComponent,
+    indexes        = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
+    replaceIndexes = true) {
+
+  //  override def indexes: Seq[Index] = Seq(
+  //    Index(
+  //      key  = Seq("vrn" -> IndexType.Ascending),
+  //      name = Some("vrnIdx")
+  //    ),
+  //    Index(
+  //      key  = Seq("repaymentDetailsData.periodKey" -> IndexType.Ascending),
+  //      name = Some("periodkeyIdx")
+  //    ),
+  //    Index(
+  //      key  = Seq("repaymentDetailsData.riskingStatus" -> IndexType.Ascending),
+  //      name = Some("riskingStatusIdx")
+  //    ),
+  //    Index(
+  //      key     = Seq("createdOn" -> IndexType.Ascending),
+  //      name    = Some("createdOnIdx"),
+  //      options = BSONDocument("expireAfterSeconds" -> config.expireMongoPayments.toSeconds)
+  //    )
+  //  )
+
+  def findByVrnAndPeriodKey(vrn: Vrn, periodKey: PeriodKey): Future[Seq[VrtRepaymentDetailData]] = {
+    collection.find(and(equal("vrn", vrn.value), equal("repaymentDetailsData.periodKey", periodKey.value))).toFuture()
   }
 
-  def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: RiskingStatus): Future[List[VrtRepaymentDetailData]] = {
-    find("vrn" -> vrn.value, "repaymentDetailsData.periodKey" -> periodKey.value,
-      "repaymentDetailsData.riskingStatus" -> riskingStatus)
+  def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: RiskingStatus): Future[Seq[VrtRepaymentDetailData]] = {
+    collection.find(and(equal("vrn", vrn.value), equal("repaymentDetailsData.periodKey", periodKey.value),
+                        equal("repaymentDetailsData.riskingStatus", riskingStatus))).toFuture()
   }
 
-  def removeByPeriodKeyForTest(periodKeys: List[PeriodKey]): Future[WriteResult] = {
-    remove("repaymentDetailsData.periodKey" -> Json.obj("$in" -> Json.toJson(periodKeys)))
+  def removeByPeriodKeyForTest(periodKeys: List[PeriodKey]): Future[result.DeleteResult] = {
+    collection.deleteOne(equal("repaymentDetailsData.periodKey", Json.obj("$in" -> Json.toJson(periodKeys)))).toFuture()
   }
 }

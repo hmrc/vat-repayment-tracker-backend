@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,13 +33,13 @@
 package controllers
 
 import java.time.LocalDate
-import java.time.LocalDate.now
+import java.time.LocalDateTime.now
 import javax.inject.{Inject, Singleton}
 import model.des.RepaymentDetailData
 import model.des.RiskingStatus._
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
+import org.bson.types.ObjectId
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import reactivemongo.bson.BSONObjectID
 import repository.VrtRepo
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -73,15 +73,18 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
     }
   }
 
+  //  private def insertRows(current: Int, rows: Int): Future[Int] =
+  //    repo.bulkInsert(bulkVrtRepaymentDetailData(current, rows)).map(inserted => inserted.n)
+
   private def insertRows(current: Int, rows: Int): Future[Int] =
-    repo.bulkInsert(bulkVrtRepaymentDetailData(current, rows)).map(inserted => inserted.n)
+    bulkVrtRepaymentDetailData(current, rows).map(document => repo.upsert(document))
 
   private def bulkVrtRepaymentDetailData(current: Int, rows: Int): Seq[VrtRepaymentDetailData] =
     for (n <- 1 to rows) yield vrtRepaymentDetailData(Vrn(s"$current$n"))
 
   private def vrtRepaymentDetailData(vrn: Vrn) =
     VrtRepaymentDetailData(
-      Some(VrtId(BSONObjectID.generate.stringify)),
+      VrtId(ObjectId.get()),
       now(),
       vrn,
       RepaymentDetailData(

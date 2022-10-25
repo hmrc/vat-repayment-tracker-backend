@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,10 @@ import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.ExecutionContext
 
-abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)
-  (implicit executionContext: ExecutionContext) extends BackendController(cc) {
+abstract class VrtController @Inject() (
+    cc:   ControllerComponents,
+    repo: VrtRepo
+)(implicit executionContext: ExecutionContext) extends BackendController(cc) {
   private[controllers] def store()(implicit request: Request[VrtRepaymentDetailData]) = {
     val repaymentData: VrtRepaymentDetailData = request.body
     val periodKey = PeriodKey(repaymentData.repaymentDetailsData.periodKey)
@@ -36,10 +38,10 @@ abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)
 
     for {
       data <- repo.findByVrnAndPeriodKeyAndRiskingStatus(repaymentData.vrn, periodKey, riskingStatus)
-      vrtId = data.headOption.fold(VrtId.fresh)(_._id.getOrElse(throw new RuntimeException("No id")))
-      result <- repo.upsert(vrtId, repaymentData.copy(_id = Some(vrtId)))
+      vrtId = data.headOption.fold(VrtId.fresh)(_._id)
+      result <- repo.upsert(repaymentData.copy(_id = vrtId))
     } yield {
-      Ok(s"updated ${result.n.toString} records")
+      Ok(s"updated ${result.toString}")
     }
   }
 }
