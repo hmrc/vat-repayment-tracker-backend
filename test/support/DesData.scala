@@ -16,10 +16,9 @@
 
 package support
 
-import model.des.RiskingStatus.{INITIAL, REPAYMENT_APPROVED}
+import model.des.RiskingStatus._
 
-import java.time.LocalDateTime
-import java.time.LocalDateTime.now
+import java.time.{LocalDate, LocalDateTime}
 import model.{Vrn, VrtId, VrtRepaymentDetailData}
 import model.des._
 import org.bson.types.ObjectId
@@ -28,9 +27,9 @@ import play.api.libs.json.{JsValue, Json}
 object DesData {
 
   val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
-    LocalDateTime.parse("2001-01-01"),
-    Option(LocalDateTime.parse("2001-01-01")),
-    Option(LocalDateTime.parse("2001-01-01")),
+    LocalDate.parse("2001-01-01"),
+    Option(LocalDate.parse("2001-01-01")),
+    Option(LocalDate.parse("2001-01-01")),
     "18AC",
     INITIAL,
     1000,
@@ -39,9 +38,9 @@ object DesData {
   )
 
   val repaymentDetail2: RepaymentDetailData = RepaymentDetailData(
-    LocalDateTime.parse("2001-01-01"),
-    Option(LocalDateTime.parse("2001-01-01")),
-    Option(LocalDateTime.parse("2001-01-01")),
+    LocalDate.parse("2001-01-01"),
+    Option(LocalDate.parse("2001-01-01")),
+    Option(LocalDate.parse("2001-01-01")),
     "18AC",
     REPAYMENT_APPROVED,
     1000,
@@ -69,18 +68,18 @@ object DesData {
 
   private val vrn: Vrn = Vrn("2345678891")
   private val id: VrtId = VrtId(ObjectId.get())
-  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(id, now(), vrn, repaymentDetail)
+  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(id, LocalDateTime.now(), vrn, repaymentDetail)
 
   //language=JSON
   val vrtRepaymentDetailDataJson: JsValue = Json.parse(
     s"""{
           "_id" : "${id.value}",
-          "creationDate": "${now()}",
+          "creationDate": "${LocalDateTime.now()}",
           "vrn": "${vrn.value}",
           "repaymentDetailsData": {
-          "returnCreationDate": "2001-01-01",
-          "sentForRiskingDate": "2001-01-01",
-          "lastUpdateReceivedDate": "2001-01-01",
+          "returnCreationDate": "2001-01-01T10:00:00.00",
+          "sentForRiskingDate": "2001-01-01T10:00:00.00",
+          "lastUpdateReceivedDate": "2001-01-01T10:00:00.00",
           "periodKey": "18AC",
           "riskingStatus": "INITIAL",
           "vatToPay_BOX5": 1000,

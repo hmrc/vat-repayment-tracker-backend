@@ -29,6 +29,8 @@ import support._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.auth.core.SessionRecordNotFound
 
+import java.time.LocalDateTime
+
 class ControllerSpec extends ItSpec with Status {
   implicit val emptyHC: HeaderCarrier = HeaderCarrier()
 

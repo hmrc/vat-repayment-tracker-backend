@@ -16,13 +16,13 @@
 
 package model.des
 
-import java.time.LocalDateTime
+import java.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
 
 final case class RepaymentDetailData(
-    returnCreationDate:     LocalDateTime,
-    sentForRiskingDate:     Option[LocalDateTime],
-    lastUpdateReceivedDate: Option[LocalDateTime],
+    returnCreationDate:     LocalDate,
+    sentForRiskingDate:     Option[LocalDate],
+    lastUpdateReceivedDate: Option[LocalDate],
     periodKey:              String,
     riskingStatus:          RiskingStatus,
     vatToPay_BOX5:          BigDecimal,

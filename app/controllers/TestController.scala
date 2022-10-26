@@ -32,7 +32,7 @@
 
 package controllers
 
-import java.time.LocalDateTime
+import java.time.{LocalDate, LocalDateTime}
 import java.time.LocalDateTime.now
 import javax.inject.{Inject, Singleton}
 import model.des.RepaymentDetailData
@@ -90,9 +90,9 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
       now(),
       vrn,
       RepaymentDetailData(
-        LocalDateTime.parse(date),
-        Option(LocalDateTime.parse(date)),
-        Option(LocalDateTime.parse(date)),
+        LocalDate.parse(date),
+        Option(LocalDate.parse(date)),
+        Option(LocalDate.parse(date)),
         possiblePeriods(r.nextInt(possiblePeriods.length)).value,
         possibleRiskStatus(r.nextInt(possibleRiskStatus.length)),
         r.nextInt(100),

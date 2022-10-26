@@ -19,10 +19,11 @@ package repository
 import java.time.LocalDateTime.now
 import model._
 import model.des.RiskingStatus.REPAYMENT_APPROVED
-import play.api.libs.json.Json
 import org.bson.types.ObjectId
 import support.DesData.{repaymentDetail, repaymentDetail2}
 import support.ItSpec
+
+import java.time.{LocalDate, LocalDateTime}
 
 class VrtRepoSpec extends ItSpec {
   private lazy val repo = injector.instanceOf[VrtRepo]
