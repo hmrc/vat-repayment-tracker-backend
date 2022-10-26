@@ -32,7 +32,7 @@
 
 package controllers
 
-import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.LocalDateTime.now
 import javax.inject.{Inject, Singleton}
 import model.des.RepaymentDetailData
@@ -73,11 +73,13 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
     }
   }
 
-  //  private def insertRows(current: Int, rows: Int): Future[Int] =
-  //    repo.bulkInsert(bulkVrtRepaymentDetailData(current, rows)).map(inserted => inserted.n)
-
-  private def insertRows(current: Int, rows: Int): Future[Int] =
-    bulkVrtRepaymentDetailData(current, rows).map(document => repo.upsert(document))
+  private def insertRows(current: Int, rows: Int): Future[Int] = {
+    Future.successful {
+      bulkVrtRepaymentDetailData(current, rows)
+        .map(repo.upsert)
+        .foldLeft(0)((a, _) => a + 1)
+    }
+  }
 
   private def bulkVrtRepaymentDetailData(current: Int, rows: Int): Seq[VrtRepaymentDetailData] =
     for (n <- 1 to rows) yield vrtRepaymentDetailData(Vrn(s"$current$n"))
@@ -88,9 +90,9 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
       now(),
       vrn,
       RepaymentDetailData(
-        LocalDate.parse(date),
-        Option(LocalDate.parse(date)),
-        Option(LocalDate.parse(date)),
+        LocalDateTime.parse(date),
+        Option(LocalDateTime.parse(date)),
+        Option(LocalDateTime.parse(date)),
         possiblePeriods(r.nextInt(possiblePeriods.length)).value,
         possibleRiskStatus(r.nextInt(possibleRiskStatus.length)),
         r.nextInt(100),

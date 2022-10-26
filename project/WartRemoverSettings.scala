@@ -10,7 +10,7 @@ object  WartRemoverSettings {
       Wart.StringPlusAny,
       Wart.AsInstanceOf,
       Wart.IsInstanceOf,
-      Wart.Any
+//      Wart.Any
     )
     wartremover.WartRemover.autoImport.wartremoverWarnings in(Compile, compile) ++= warningWarts
   }

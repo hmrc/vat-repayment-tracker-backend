@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,19 +18,19 @@ package support
 
 import model.des.RiskingStatus.{INITIAL, REPAYMENT_APPROVED}
 
-import java.time.LocalDate
-import java.time.LocalDate.now
+import java.time.LocalDateTime
+import java.time.LocalDateTime.now
 import model.{Vrn, VrtId, VrtRepaymentDetailData}
 import model.des._
+import org.bson.types.ObjectId
 import play.api.libs.json.{JsValue, Json}
-import reactivemongo.bson.BSONObjectID
 
 object DesData {
 
   val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
-    LocalDate.parse("2001-01-01"),
-    Option(LocalDate.parse("2001-01-01")),
-    Option(LocalDate.parse("2001-01-01")),
+    LocalDateTime.parse("2001-01-01"),
+    Option(LocalDateTime.parse("2001-01-01")),
+    Option(LocalDateTime.parse("2001-01-01")),
     "18AC",
     INITIAL,
     1000,
@@ -39,9 +39,9 @@ object DesData {
   )
 
   val repaymentDetail2: RepaymentDetailData = RepaymentDetailData(
-    LocalDate.parse("2001-01-01"),
-    Option(LocalDate.parse("2001-01-01")),
-    Option(LocalDate.parse("2001-01-01")),
+    LocalDateTime.parse("2001-01-01"),
+    Option(LocalDateTime.parse("2001-01-01")),
+    Option(LocalDateTime.parse("2001-01-01")),
     "18AC",
     REPAYMENT_APPROVED,
     1000,
@@ -68,8 +68,8 @@ object DesData {
   )
 
   private val vrn: Vrn = Vrn("2345678891")
-  private val id: VrtId = VrtId(BSONObjectID.generate.stringify)
-  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+  private val id: VrtId = VrtId(ObjectId.get())
+  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(id, now(), vrn, repaymentDetail)
 
   //language=JSON
   val vrtRepaymentDetailDataJson: JsValue = Json.parse(

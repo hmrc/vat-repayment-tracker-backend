@@ -30,8 +30,7 @@ final case class VrtRepaymentDetailData(
 ) extends HasId[VrtId]
 
 object VrtRepaymentDetailData {
-  implicit val format: OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
-
   implicit val localDateTimeFormat: Format[LocalDateTime] = MongoJavatimeFormats.localDateTimeFormat
 
+  implicit val format: OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,12 @@
 
 package controller
 
-import java.time.LocalDate.now
+import java.time.LocalDateTime.now
 import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model._
 import model.des.RiskingStatus.SENT_FOR_RISKING
+import org.bson.types.ObjectId
 import play.api.http.Status
-import reactivemongo.bson.BSONObjectID
 import repository.VrtRepo
 import support.AuthStub._
 import support.DesData.repaymentDetail
@@ -34,18 +34,18 @@ class ControllerSpec extends ItSpec with Status {
 
   private val vrn = Vrn("2345678890")
   private val vrn2 = Vrn("2345678891")
-  private val id = VrtId(BSONObjectID.generate.stringify)
-  private val id2 = VrtId(BSONObjectID.generate.stringify)
+  private val id = VrtId(ObjectId.get())
+  private val id2 = VrtId(ObjectId.get())
   private val periodKey = PeriodKey("18AC")
-  private val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
-  private val vrtData2 = VrtRepaymentDetailData(Some(id), now(), vrn2, repaymentDetail)
-  private val vrtData3 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail.copy(riskingStatus = SENT_FOR_RISKING))
+  private val vrtData = VrtRepaymentDetailData(id, now(), vrn, repaymentDetail)
+  private val vrtData2 = VrtRepaymentDetailData(id, now(), vrn2, repaymentDetail)
+  private val vrtData3 = VrtRepaymentDetailData(id2, now(), vrn, repaymentDetail.copy(riskingStatus = SENT_FOR_RISKING))
 
   private lazy val testConnector = injector.instanceOf[TestConnector]
   private lazy val repo = injector.instanceOf[VrtRepo]
 
   override def beforeEach(): Unit = {
-    repo.removeAll().futureValue
+    repo.collection.drop().toFuture.futureValue
     ()
   }
 
