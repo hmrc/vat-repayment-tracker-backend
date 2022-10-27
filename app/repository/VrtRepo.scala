@@ -16,7 +16,7 @@
 
 package repository
 
-import model.des.RiskingStatus
+import model.des.{RepaymentDetailData, RiskingStatus}
 
 import javax.inject.{Inject, Singleton}
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
@@ -25,6 +25,8 @@ import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import org.mongodb.scala.result
 import play.api.libs.json.Json
 import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.Codecs
+import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import java.util.concurrent.TimeUnit
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,12 +43,12 @@ object VrtRepo {
 @Singleton
 final class VrtRepo @Inject() (
     mongoComponent: MongoComponent,
-    config:         VrtRepoConfig
+    config:         ServicesConfig
 )(implicit ec: ExecutionContext)
   extends Repo[VrtId, VrtRepaymentDetailData](
     collectionName = "repayment-details",
     mongoComponent = mongoComponent,
-    indexes        = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
+    indexes        = VrtRepo.indexes(config.getDuration("vrt.ttl").toSeconds),
     replaceIndexes = true) {
 
   //  override def indexes: Seq[Index] = Seq(

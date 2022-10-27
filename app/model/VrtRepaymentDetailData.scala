@@ -23,7 +23,7 @@ import repository.HasId
 import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 final case class VrtRepaymentDetailData(
-    _id:                  VrtId,
+    _id:                  Option[VrtId],
     creationDate:         LocalDateTime,
     vrn:                  Vrn,
     repaymentDetailsData: RepaymentDetailData

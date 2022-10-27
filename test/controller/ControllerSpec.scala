@@ -22,14 +22,13 @@ import model._
 import model.des.RiskingStatus.SENT_FOR_RISKING
 import org.bson.types.ObjectId
 import play.api.http.Status
+import play.api.libs.json.{Json, OFormat}
 import repository.VrtRepo
 import support.AuthStub._
 import support.DesData.repaymentDetail
 import support._
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.auth.core.SessionRecordNotFound
-
-import java.time.LocalDateTime
 
 class ControllerSpec extends ItSpec with Status {
   implicit val emptyHC: HeaderCarrier = HeaderCarrier()
@@ -39,9 +38,9 @@ class ControllerSpec extends ItSpec with Status {
   private val id = VrtId(ObjectId.get())
   private val id2 = VrtId(ObjectId.get())
   private val periodKey = PeriodKey("18AC")
-  private val vrtData = VrtRepaymentDetailData(id, now(), vrn, repaymentDetail)
-  private val vrtData2 = VrtRepaymentDetailData(id, now(), vrn2, repaymentDetail)
-  private val vrtData3 = VrtRepaymentDetailData(id2, now(), vrn, repaymentDetail.copy(riskingStatus = SENT_FOR_RISKING))
+  private val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+  private val vrtData2 = VrtRepaymentDetailData(Some(id), now(), vrn2, repaymentDetail)
+  private val vrtData3 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail.copy(riskingStatus = SENT_FOR_RISKING))
 
   private lazy val testConnector = injector.instanceOf[TestConnector]
   private lazy val repo = injector.instanceOf[VrtRepo]

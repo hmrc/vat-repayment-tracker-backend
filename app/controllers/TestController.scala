@@ -86,7 +86,7 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
 
   private def vrtRepaymentDetailData(vrn: Vrn) =
     VrtRepaymentDetailData(
-      VrtId(ObjectId.get()),
+      Some(VrtId(ObjectId.get())),
       now(),
       vrn,
       RepaymentDetailData(

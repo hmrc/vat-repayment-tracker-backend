@@ -50,15 +50,15 @@ class VrtRepoSpec extends ItSpec {
   }
 
   "insert a record" in {
-    val vrtData = VrtRepaymentDetailData(id, now(), vrn, repaymentDetail)
+    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
     repo.upsert(vrtData).futureValue
     collectionSize shouldBe 1
 
   }
 
   "find records by vrn and periodKey" in {
-    val vrtData = VrtRepaymentDetailData(id, now(), vrn, repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(id2, now(), vrn2, repaymentDetail)
+    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn2, repaymentDetail)
     repo.upsert(vrtData).futureValue
     repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2
@@ -67,8 +67,8 @@ class VrtRepoSpec extends ItSpec {
   }
 
   "find records by vrn, periodKey and riskingStatus" in {
-    val vrtData = VrtRepaymentDetailData(id, now(), vrn, repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(id2, now(), vrn, repaymentDetail2)
+    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail2)
     repo.upsert(vrtData).futureValue
     repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2
@@ -77,8 +77,8 @@ class VrtRepoSpec extends ItSpec {
   }
 
   "removeByPeriodKeyForTest " in {
-    val vrtData = VrtRepaymentDetailData(id, now(), vrn, repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(id2, now(), vrn, repaymentDetail2)
+    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail2)
     repo.upsert(vrtData).futureValue
     repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2

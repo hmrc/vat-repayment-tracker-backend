@@ -68,7 +68,7 @@ object DesData {
 
   private val vrn: Vrn = Vrn("2345678891")
   private val id: VrtId = VrtId(ObjectId.get())
-  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(id, LocalDateTime.now(), vrn, repaymentDetail)
+  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id), LocalDateTime.now(), vrn, repaymentDetail)
 
   //language=JSON
   val vrtRepaymentDetailDataJson: JsValue = Json.parse(

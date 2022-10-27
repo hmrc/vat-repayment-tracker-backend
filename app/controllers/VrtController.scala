@@ -38,8 +38,8 @@ abstract class VrtController @Inject() (
 
     for {
       data <- repo.findByVrnAndPeriodKeyAndRiskingStatus(repaymentData.vrn, periodKey, riskingStatus)
-      vrtId = data.headOption.fold(VrtId.fresh)(_._id)
-      result <- repo.upsert(repaymentData.copy(_id = vrtId))
+      vrtId = data.headOption.fold(VrtId.fresh)(_._id.getOrElse(throw new RuntimeException("No id")))
+      result <- repo.upsert(repaymentData.copy(_id = Some(vrtId)))
     } yield {
       Ok(s"updated ${result.toString}")
     }

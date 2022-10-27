@@ -20,7 +20,7 @@ import org.mongodb.scala.bson.ObjectId
 import org.mongodb.scala.model.{Filters, IndexModel, ReplaceOptions}
 import play.api.libs.json._
 import uk.gov.hmrc.mongo.MongoComponent
-import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
+import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,9 +31,9 @@ trait Id {
 }
 
 trait HasId[ID <: Id] {
-  def _id: ID
+  def _id: Option[ID]
 
-  def id: ID = _id
+  def id: Option[ID] = _id
 }
 
 abstract class Repo[ID <: Id, A <: HasId[ID]](
@@ -56,7 +56,7 @@ abstract class Repo[ID <: Id, A <: HasId[ID]](
    */
   def upsert(a: A): Future[Unit] = collection
     .replaceOne(
-      filter      = Filters.eq("_id", a.id.value),
+      filter      = Filters.eq("_id", a.id.fold(0)(_)),
       replacement = a,
       options     = ReplaceOptions().upsert(true)
     )
