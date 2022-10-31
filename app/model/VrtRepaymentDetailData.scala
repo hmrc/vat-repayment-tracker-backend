@@ -16,13 +16,16 @@
 
 package model
 
-import java.time.LocalDate
-
-import play.api.libs.json.{Json, OFormat}
 import model.des.RepaymentDetailData
+import play.api.libs.json.{Format, Json, OFormat}
+import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
+
+import java.time.LocalDate
 
 final case class VrtRepaymentDetailData(_id: Option[VrtId], creationDate: LocalDate, vrn: Vrn, repaymentDetailsData: RepaymentDetailData)
 
 object VrtRepaymentDetailData {
+  implicit val localDateTimeFormat: Format[LocalDate] = MongoJavatimeFormats.localDateFormat
+
   implicit val format: OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
 }

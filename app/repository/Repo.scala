@@ -27,18 +27,17 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 abstract class Repo[ID, A: ClassTag](
-                                      collectionName: String,
-                                      mongoComponent: MongoComponent,
-                                      indexes:        Seq[IndexModel],
-                                      extraCodecs:    Seq[Codec[_]]   = Seq.empty,
-                                      replaceIndexes: Boolean         = false
-                                    )(implicit
-                                      manifest: Manifest[A],
-                                      domainFormat:     OFormat[A],
-                                      executionContext: ExecutionContext,
-                                      id:               Id[ID],
-                                      idExtractor:      IdExtractor[A, ID]
-                                    )
+    collectionName: String,
+    mongoComponent: MongoComponent,
+    indexes:        Seq[IndexModel],
+    extraCodecs:    Seq[Codec[_]]   = Seq.empty,
+    replaceIndexes: Boolean         = false
+)(implicit manifest: Manifest[A],
+  domainFormat:     OFormat[A],
+  executionContext: ExecutionContext,
+  id:               Id[ID],
+  idExtractor:      IdExtractor[A, ID]
+)
   extends PlayMongoRepository[A](
     mongoComponent = mongoComponent,
     collectionName = collectionName,
@@ -59,7 +58,6 @@ abstract class Repo[ID, A: ClassTag](
     )
     .toFuture()
     .map(_ => ())
-
 
   def findById(i: ID): Future[Option[A]] = collection
     .find(

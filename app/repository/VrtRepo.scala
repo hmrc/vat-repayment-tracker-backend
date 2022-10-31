@@ -25,20 +25,22 @@ import play.api.libs.json.Json
 import repository.Repo.{Id, IdExtractor}
 import uk.gov.hmrc.mongo.MongoComponent
 import VrtRepo._
+
 import java.util.concurrent.TimeUnit
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.Projections._
 import org.mongodb.scala.model.Sorts._
+import org.mongodb.scala.result.DeleteResult
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-final class VrtRepo @Inject()(mongoComponent: MongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
+final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
   extends Repo[VrtId, VrtRepaymentDetailData](
     collectionName = "repayment-details-new-mongo",
     mongoComponent = mongoComponent,
-    indexes = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
+    indexes        = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
     replaceIndexes = true) {
-
 
   def findByVrnAndPeriodKey(vrn: Vrn, periodKey: PeriodKey): Future[Seq[VrtRepaymentDetailData]] =
     collection.find(and(equal("vrn", vrn.value), equal("repaymentDetailsData.periodKey", periodKey.value)))
@@ -53,11 +55,6 @@ final class VrtRepo @Inject()(mongoComponent: MongoComponent, config: VrtRepoCon
       )
     ).toFuture()
 
-//  // TODO this should not exist
-//  def removeByPeriodKeyForTest(periodKeys: List[PeriodKey]): Future[WriteResult] = {
-//    collection.dele
-//    remove("repaymentDetailsData.periodKey" -> Json.obj("$in" -> Json.toJson(periodKeys)))
-//  }
 }
 
 object VrtRepo {
@@ -67,7 +64,7 @@ object VrtRepo {
     IndexModel(keys = Indexes.ascending("repaymentDetailsData.periodKey")),
     IndexModel(keys = Indexes.ascending("repaymentDetailsData.riskingStatus")),
     IndexModel(
-      keys = Indexes.ascending("createdOn"),
+      keys         = Indexes.ascending("createdOn"),
       indexOptions = IndexOptions().expireAfter(ttl, TimeUnit.SECONDS)
     )
   )

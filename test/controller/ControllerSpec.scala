@@ -20,8 +20,8 @@ import java.time.LocalDate.now
 import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model._
 import model.des.RiskingStatus.SENT_FOR_RISKING
+import org.bson.types.ObjectId
 import play.api.http.Status
-import reactivemongo.bson.BSONObjectID
 import repository.VrtRepo
 import support.AuthStub._
 import support.DesData.repaymentDetail
@@ -34,8 +34,8 @@ class ControllerSpec extends ItSpec with Status {
 
   private val vrn = Vrn("2345678890")
   private val vrn2 = Vrn("2345678891")
-  private val id = VrtId(BSONObjectID.generate.stringify)
-  private val id2 = VrtId(BSONObjectID.generate.stringify)
+  private val id = VrtId(ObjectId.get.toString)
+  private val id2 = VrtId(ObjectId.get.toString)
   private val periodKey = PeriodKey("18AC")
   private val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
   private val vrtData2 = VrtRepaymentDetailData(Some(id), now(), vrn2, repaymentDetail)
@@ -45,26 +45,26 @@ class ControllerSpec extends ItSpec with Status {
   private lazy val repo = injector.instanceOf[VrtRepo]
 
   override def beforeEach(): Unit = {
-    repo.removeAll().futureValue
+    repo.collection.drop().toFuture().futureValue
     ()
   }
 
   import play.api.test.Helpers._
 
-  "store data " in {
+  "store data" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData)
     status(result) shouldBe OK
-    contentAsString(result) shouldBe "updated 1 records"
+    contentAsString(result) shouldBe "updated 1 record"
   }
 
   "store data testOnly" in {
     val result = testConnector.storeTestOnly(vrtData)
     status(result) shouldBe OK
-    contentAsString(result) shouldBe "updated 1 records"
+    contentAsString(result) shouldBe "updated 1 record"
   }
 
-  "find data " in {
+  "find data" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData)
     status(result) shouldBe OK
@@ -115,14 +115,14 @@ class ControllerSpec extends ItSpec with Status {
     givenTheUserIsNotAuthenticated()
     the[SessionRecordNotFound] thrownBy {
       status(testConnector.find(vrn, periodKey)) shouldBe 401
-    } should have message ("Session record not found")
+    } should have message "Session record not found"
   }
 
   "Get data, not authorised should result in 401" in {
     givenTheUserIsNotAuthenticated()
     the[SessionRecordNotFound] thrownBy {
       status(testConnector.find(vrn, periodKey)) shouldBe 401
-    } should have message ("Session record not found")
+    } should have message "Session record not found"
   }
 
   "Get data, logged in but no access to VRN" in {

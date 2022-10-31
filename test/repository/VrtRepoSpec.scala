@@ -19,9 +19,7 @@ package repository
 import java.time.LocalDate.now
 import model._
 import model.des.RiskingStatus.REPAYMENT_APPROVED
-import play.api.libs.json.Json
-import reactivemongo.api.commands.UpdateWriteResult
-import reactivemongo.bson.BSONObjectID
+import org.bson.types.ObjectId
 import support.DesData.{repaymentDetail, repaymentDetail2}
 import support.ItSpec
 
@@ -31,61 +29,43 @@ class VrtRepoSpec extends ItSpec {
   private val vrn = Vrn("2345678890")
   private val vrn2 = Vrn("2345678891")
   private val periodKey = PeriodKey("18AC")
-  private val id = VrtId(BSONObjectID.generate.stringify)
-  private val id2 = VrtId(BSONObjectID.generate.stringify)
+  private val id = VrtId(ObjectId.get.toString)
+  private val id2 = VrtId(ObjectId.get.toString)
 
   override def beforeEach(): Unit = {
-    repo.removeAll().futureValue
+    repo.collection.drop().toFuture().futureValue
     ()
   }
 
-  "Count should be 0 with empty repo" in {
+  "count should be 0 with empty repo" in {
     collectionSize shouldBe 0
-  }
-
-  "ensure indexes are created" in {
-    repo.drop.futureValue
-    repo.ensureIndexes.futureValue
-    repo.collection.indexesManager.list().futureValue.size shouldBe 5
   }
 
   "insert a record" in {
     val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
-    val upserted: UpdateWriteResult = repo.upsert(id, vrtData).futureValue
-    upserted.n shouldBe 1
-
+    repo.upsert(vrtData).futureValue
+    collectionSize shouldBe 1
   }
 
   "find records by vrn and periodKey" in {
     val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
     val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn2, repaymentDetail)
-    repo.upsert(id, vrtData).futureValue
-    repo.upsert(id2, vrtData2).futureValue
+    repo.upsert(vrtData).futureValue
+    repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2
-    val found: List[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKey(vrn, periodKey).futureValue
+    val found: Seq[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKey(vrn, periodKey).futureValue
     found.size shouldBe 1
   }
 
   "find records by vrn, periodKey and riskingStatus" in {
     val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
     val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail2)
-    repo.upsert(id, vrtData).futureValue
-    repo.upsert(id2, vrtData2).futureValue
+    repo.upsert(vrtData).futureValue
+    repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2
-    val found: List[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, REPAYMENT_APPROVED).futureValue
+    val found: Seq[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, REPAYMENT_APPROVED).futureValue
     found.size shouldBe 1
   }
 
-  "removeByPeriodKeyForTest " in {
-    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail2)
-    repo.upsert(id, vrtData).futureValue
-    repo.upsert(id2, vrtData2).futureValue
-    collectionSize shouldBe 2
-    repo.removeByPeriodKeyForTest(List(PeriodKey("18AC"))).futureValue
-    collectionSize shouldBe 0
-
-  }
-
-  private def collectionSize: Int = repo.count(Json.obj()).futureValue
+  private def collectionSize: Int = repo.collection.find().toFuture().map(_.size).futureValue
 }
