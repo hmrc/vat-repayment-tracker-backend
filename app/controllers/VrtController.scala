@@ -36,10 +36,10 @@ abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)
 
     for {
       data <- repo.findByVrnAndPeriodKeyAndRiskingStatus(repaymentData.vrn, periodKey, riskingStatus)
-      vrtId = data.headOption.fold(VrtId.fresh)(_._id.getOrElse(throw new RuntimeException("No id")))
-      result <- repo.upsert(vrtId, repaymentData.copy(_id = Some(vrtId)))
+      vrtId = data.headOption.fold(VrtId.generate)(_._id.getOrElse(throw new RuntimeException("No id")))
+      _ <- repo.upsert(repaymentData.copy(_id = Some(vrtId)))
     } yield {
-      Ok(s"updated ${result.n.toString} records")
+      Ok(s"updated 1 record")
     }
   }
 }

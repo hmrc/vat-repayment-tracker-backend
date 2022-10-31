@@ -15,17 +15,18 @@
  */
 
 package model
+
 import controllers.ValueClassBinder.valueClassBinder
+import org.bson.types.ObjectId
 import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.mvc.PathBindable
-import reactivemongo.bson.BSONObjectID
 
 final case class VrtId(value: String)
 
 object VrtId {
   implicit val format: Format[VrtId] = implicitly[Format[String]].inmap(VrtId(_), _.value)
   implicit val journeyIdBinder: PathBindable[VrtId] = valueClassBinder(_.value)
-  def fresh: VrtId = VrtId(BSONObjectID.generate.stringify)
+  def generate: VrtId = VrtId(ObjectId.get().toString)
 }
 

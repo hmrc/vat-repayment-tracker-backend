@@ -25,5 +25,4 @@ final case class VrtRepaymentDetailData(_id: Option[VrtId], creationDate: LocalD
 
 object VrtRepaymentDetailData {
   implicit val format: OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
-
 }

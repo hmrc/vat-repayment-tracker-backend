@@ -20,48 +20,59 @@ import model.des.RiskingStatus
 
 import javax.inject.{Inject, Singleton}
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
+import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import play.api.libs.json.Json
-import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.commands.WriteResult
-import reactivemongo.api.indexes._
-import reactivemongo.bson.BSONDocument
-
+import repository.Repo.{Id, IdExtractor}
+import uk.gov.hmrc.mongo.MongoComponent
+import VrtRepo._
+import java.util.concurrent.TimeUnit
+import org.mongodb.scala.model.Filters._
+import org.mongodb.scala.model.Projections._
+import org.mongodb.scala.model.Sorts._
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-final class VrtRepo @Inject() (reactiveMongoComponent: ReactiveMongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
-  extends Repo[VrtRepaymentDetailData, VrtId]("repayment-details", reactiveMongoComponent) {
+final class VrtRepo @Inject()(mongoComponent: MongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
+  extends Repo[VrtId, VrtRepaymentDetailData](
+    collectionName = "repayment-details-new-mongo",
+    mongoComponent = mongoComponent,
+    indexes = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
+    replaceIndexes = true) {
 
-  override def indexes: Seq[Index] = Seq(
-    Index(
-      key  = Seq("vrn" -> IndexType.Ascending),
-      name = Some("vrnIdx")
-    ),
-    Index(
-      key  = Seq("repaymentDetailsData.periodKey" -> IndexType.Ascending),
-      name = Some("periodkeyIdx")
-    ),
-    Index(
-      key  = Seq("repaymentDetailsData.riskingStatus" -> IndexType.Ascending),
-      name = Some("riskingStatusIdx")
-    ),
-    Index(
-      key     = Seq("createdOn" -> IndexType.Ascending),
-      name    = Some("createdOnIdx"),
-      options = BSONDocument("expireAfterSeconds" -> config.expireMongoPayments.toSeconds)
+
+  def findByVrnAndPeriodKey(vrn: Vrn, periodKey: PeriodKey): Future[Seq[VrtRepaymentDetailData]] =
+    collection.find(and(equal("vrn", vrn.value), equal("repaymentDetailsData.periodKey", periodKey.value)))
+      .toFuture()
+
+  def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: RiskingStatus): Future[Seq[VrtRepaymentDetailData]] =
+    collection.find(
+      and(
+        equal("vrn", vrn.value),
+        equal("repaymentDetailsData.periodKey", periodKey.value),
+        equal("repaymentDetailsData.riskingStatus", riskingStatus.toString),
+      )
+    ).toFuture()
+
+//  // TODO this should not exist
+//  def removeByPeriodKeyForTest(periodKeys: List[PeriodKey]): Future[WriteResult] = {
+//    collection.dele
+//    remove("repaymentDetailsData.periodKey" -> Json.obj("$in" -> Json.toJson(periodKeys)))
+//  }
+}
+
+object VrtRepo {
+
+  def indexes(ttl: Long): Seq[IndexModel] = Seq(
+    IndexModel(keys = Indexes.ascending("vrn")),
+    IndexModel(keys = Indexes.ascending("repaymentDetailsData.periodKey")),
+    IndexModel(keys = Indexes.ascending("repaymentDetailsData.riskingStatus")),
+    IndexModel(
+      keys = Indexes.ascending("createdOn"),
+      indexOptions = IndexOptions().expireAfter(ttl, TimeUnit.SECONDS)
     )
   )
 
-  def findByVrnAndPeriodKey(vrn: Vrn, periodKey: PeriodKey): Future[List[VrtRepaymentDetailData]] = {
-    find("vrn" -> vrn.value, "repaymentDetailsData.periodKey" -> periodKey.value)
-  }
+  implicit val journeyId: Id[VrtId] = (i: VrtId) => i.value
 
-  def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: RiskingStatus): Future[List[VrtRepaymentDetailData]] = {
-    find("vrn" -> vrn.value, "repaymentDetailsData.periodKey" -> periodKey.value,
-      "repaymentDetailsData.riskingStatus" -> riskingStatus)
-  }
-
-  def removeByPeriodKeyForTest(periodKeys: List[PeriodKey]): Future[WriteResult] = {
-    remove("repaymentDetailsData.periodKey" -> Json.obj("$in" -> Json.toJson(periodKeys)))
-  }
+  implicit val journeyIdExtractor: IdExtractor[VrtRepaymentDetailData, VrtId] = (v: VrtRepaymentDetailData) => v._id.getOrElse(throw new RuntimeException(s"No id for $v (should be impossible)"))
 }
