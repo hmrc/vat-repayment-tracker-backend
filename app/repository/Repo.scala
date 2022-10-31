@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ abstract class Repo[A, ID](collectionName: String, reactiveMongoComponent: React
   }
 
   /**
-   * Update or Insert (UpSert)
+   * Update or Insert (Upsert)
    */
   def upsert(id: ID, a: A): Future[UpdateWriteResult] = collection.update(ordered = false).one(
     _id(id),

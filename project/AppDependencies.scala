@@ -1,8 +1,13 @@
 import play.core.PlayVersion.current
 import sbt._
 
+
 object AppDependencies {
+
+  //val hmrcMongoVersion = "0.73.0"
+
   val compile = Seq(
+//    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28" % hmrcMongoVersion,
     "uk.gov.hmrc"             %% "simple-reactivemongo"     % "8.0.0-play-28",
     "uk.gov.hmrc"             %% "bootstrap-backend-play-28"   % "5.4.0",
     "com.beachape"            %% "enumeratum-play"          % "1.5.13"
