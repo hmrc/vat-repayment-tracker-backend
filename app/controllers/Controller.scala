@@ -17,27 +17,29 @@
 package controllers
 
 import controllers.action.Actions
-import javax.inject.{Inject, Singleton}
-import model.{PeriodKey, Vrn, VrtRepaymentDetailData}
-import play.api.Logger
+import model.{PeriodKey, Vrn, VrtRepaymentDetailData, VrtRepaymentDetailDataMongo}
+import play.api.Logging
 import play.api.libs.json.Json.toJson
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repository.VrtRepo
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class Controller @Inject() (cc: ControllerComponents, repo: VrtRepo, actions: Actions)
-  (implicit executionContext: ExecutionContext) extends VrtController(cc, repo) {
+  (implicit executionContext: ExecutionContext) extends VrtController(cc, repo) with Logging {
+
   def storeRepaymentData(): Action[VrtRepaymentDetailData] = actions.authorised.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
     store()
   }
 
   def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions.authorised(vrn).async {
-    Logger("application").debug(s"received vrn ${vrn.value}, periodKey : ${periodKey.value}")
+    logger.debug(s"************ received vrn ${vrn.value}, periodKey : ${periodKey.value}")
 
     repo.findByVrnAndPeriodKey(vrn, periodKey).map { data =>
-      Ok(toJson(data))
+      val response = data.map(VrtRepaymentDetailData.apply)
+      Ok(toJson(response))
     }
   }
 }

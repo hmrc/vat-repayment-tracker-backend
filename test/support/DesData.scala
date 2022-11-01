@@ -20,7 +20,7 @@ import model.des.RiskingStatus.{INITIAL, REPAYMENT_APPROVED}
 
 import java.time.{LocalDate, ZoneOffset}
 import java.time.LocalDate.now
-import model.{Vrn, VrtId, VrtRepaymentDetailData}
+import model.{Vrn, VrtId, VrtRepaymentDetailDataMongo}
 import model.des._
 import org.bson.types.ObjectId
 import play.api.libs.json.{JsValue, Json}
@@ -69,7 +69,7 @@ object DesData {
 
   private val vrn: Vrn = Vrn("2345678891")
   private val id: VrtId = VrtId(ObjectId.get.toString)
-  val vrtRepaymentDetailData: VrtRepaymentDetailData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+  val vrtRepaymentDetailData: VrtRepaymentDetailDataMongo = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
 
   //language=JSON
   val vrtRepaymentDetailDataJson: JsValue = Json.parse(

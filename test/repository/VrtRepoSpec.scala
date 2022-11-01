@@ -42,28 +42,28 @@ class VrtRepoSpec extends ItSpec {
   }
 
   "insert a record" in {
-    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
+    val vrtData = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
     repo.upsert(vrtData).futureValue
     collectionSize shouldBe 1
   }
 
   "find records by vrn and periodKey" in {
-    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn2, repaymentDetail)
+    val vrtData = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailDataMongo(id2, now(), vrn2, repaymentDetail)
     repo.upsert(vrtData).futureValue
     repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2
-    val found: Seq[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKey(vrn, periodKey).futureValue
+    val found: Seq[VrtRepaymentDetailDataMongo] = repo.findByVrnAndPeriodKey(vrn, periodKey).futureValue
     found.size shouldBe 1
   }
 
   "find records by vrn, periodKey and riskingStatus" in {
-    val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail2)
+    val vrtData = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
+    val vrtData2 = VrtRepaymentDetailDataMongo(id2, now(), vrn, repaymentDetail2)
     repo.upsert(vrtData).futureValue
     repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2
-    val found: Seq[VrtRepaymentDetailData] = repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, REPAYMENT_APPROVED).futureValue
+    val found: Seq[VrtRepaymentDetailDataMongo] = repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, REPAYMENT_APPROVED).futureValue
     found.size shouldBe 1
   }
 

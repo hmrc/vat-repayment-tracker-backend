@@ -16,30 +16,28 @@
 
 package controller
 
-import java.time.LocalDate.now
 import model.EnrolmentKeys.mtdVatEnrolmentKey
 import model._
 import model.des.RiskingStatus.SENT_FOR_RISKING
-import org.bson.types.ObjectId
 import play.api.http.Status
 import repository.VrtRepo
 import support.AuthStub._
 import support.DesData.repaymentDetail
 import support._
-import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.auth.core.SessionRecordNotFound
+import uk.gov.hmrc.http.HeaderCarrier
+
+import java.time.LocalDate.now
 
 class ControllerSpec extends ItSpec with Status {
   implicit val emptyHC: HeaderCarrier = HeaderCarrier()
 
   private val vrn = Vrn("2345678890")
   private val vrn2 = Vrn("2345678891")
-  private val id = VrtId(ObjectId.get.toString)
-  private val id2 = VrtId(ObjectId.get.toString)
   private val periodKey = PeriodKey("18AC")
-  private val vrtData = VrtRepaymentDetailData(Some(id), now(), vrn, repaymentDetail)
-  private val vrtData2 = VrtRepaymentDetailData(Some(id), now(), vrn2, repaymentDetail)
-  private val vrtData3 = VrtRepaymentDetailData(Some(id2), now(), vrn, repaymentDetail.copy(riskingStatus = SENT_FOR_RISKING))
+  private val vrtData = VrtRepaymentDetailData(now(), vrn, repaymentDetail)
+  private val vrtData2 = VrtRepaymentDetailData(now(), vrn2, repaymentDetail)
+  private val vrtData3 = VrtRepaymentDetailData(now(), vrn, repaymentDetail.copy(riskingStatus = SENT_FOR_RISKING))
 
   private lazy val testConnector = injector.instanceOf[TestConnector]
   private lazy val repo = injector.instanceOf[VrtRepo]
@@ -72,7 +70,7 @@ class ControllerSpec extends ItSpec with Status {
     contentAsJson(findResult).as[List[VrtRepaymentDetailData]].size shouldBe 1
   }
 
-  "Store two records then find 1" in {
+  "store two records then find 1" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn2, enrolment = mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData)
     status(result) shouldBe OK
@@ -82,7 +80,7 @@ class ControllerSpec extends ItSpec with Status {
     contentAsJson(findResult).as[List[VrtRepaymentDetailData]].size shouldBe 1
   }
 
-  "Store record twice with an update, should find most recent version" in {
+  "store record twice with an update, should find most recent version" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData)
     status(result) shouldBe OK
@@ -94,7 +92,7 @@ class ControllerSpec extends ItSpec with Status {
     lst.head.creationDate shouldBe now.plusDays(1)
   }
 
-  "Store two records for the same VRN and Period Key bu different status should find 2" in {
+  "store two records for the same VRN and Period Key bu different status should find 2" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
     val result = testConnector.store(vrtData)
     status(result) shouldBe OK
@@ -118,20 +116,20 @@ class ControllerSpec extends ItSpec with Status {
     } should have message "Session record not found"
   }
 
-  "Get data, not authorised should result in 401" in {
+  "get data, not authorised should result in 401" in {
     givenTheUserIsNotAuthenticated()
     the[SessionRecordNotFound] thrownBy {
       status(testConnector.find(vrn, periodKey)) shouldBe 401
     } should have message "Session record not found"
   }
 
-  "Get data, logged in but no access to VRN" in {
+  "get data, logged in but no access to VRN" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn2, enrolment = mtdVatEnrolmentKey)
     val result = testConnector.find(vrn, periodKey)
     contentAsString(result) should include("You do not have access to this vrn: 2345678890")
   }
 
-  "Get data, logged in but no enrolments" in {
+  "get data, logged in but no enrolments" in {
     givenTheUserIsAuthenticatedButNotAuthorised()
     val result = testConnector.find(vrn, periodKey)
     contentAsString(result) should include("You do not have access to this service")

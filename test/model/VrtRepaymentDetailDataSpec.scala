@@ -27,6 +27,6 @@ class VrtRepaymentDetailDataSpec extends UnitSpec {
   }
 
   "from json" in {
-    vrtRepaymentDetailDataJson.as[VrtRepaymentDetailData] shouldBe vrtRepaymentDetailData
+    vrtRepaymentDetailDataJson.as[VrtRepaymentDetailDataMongo] shouldBe vrtRepaymentDetailData
   }
 }

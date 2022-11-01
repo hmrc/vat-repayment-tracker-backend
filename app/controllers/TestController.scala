@@ -37,7 +37,7 @@ import java.time.LocalDate.now
 import javax.inject.{Inject, Singleton}
 import model.des.RepaymentDetailData
 import model.des.RiskingStatus._
-import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
+import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailDataMongo, VrtRepaymentDetailData}
 import org.bson.types.ObjectId
 import org.mongodb.scala.model.Filters.in
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
@@ -81,12 +81,12 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
       .map(_.getInsertedIds.keySet().size())
   }
 
-  private def bulkVrtRepaymentDetailData(current: Int, rows: Int): Seq[VrtRepaymentDetailData] =
+  private def bulkVrtRepaymentDetailData(current: Int, rows: Int): Seq[VrtRepaymentDetailDataMongo] =
     for (n <- 1 to rows) yield vrtRepaymentDetailData(Vrn(s"$current$n"))
 
   private def vrtRepaymentDetailData(vrn: Vrn) =
-    VrtRepaymentDetailData(
-      _id                  = Some(VrtId(ObjectId.get.toString)),
+    VrtRepaymentDetailDataMongo(
+      _id                  = VrtId(ObjectId.get.toString),
       creationDate         = now(),
       vrn                  = vrn,
       repaymentDetailsData = RepaymentDetailData(
