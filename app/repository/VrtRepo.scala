@@ -28,16 +28,13 @@ import VrtRepo._
 
 import java.util.concurrent.TimeUnit
 import org.mongodb.scala.model.Filters._
-import org.mongodb.scala.model.Projections._
-import org.mongodb.scala.model.Sorts._
-import org.mongodb.scala.result.DeleteResult
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
   extends Repo[VrtId, VrtRepaymentDetailData](
-    collectionName = "repayment-details-new-mongo",
+    collectionName = "repayment-details-migrate",
     mongoComponent = mongoComponent,
     indexes        = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
     replaceIndexes = true) {
@@ -59,17 +56,16 @@ final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoCo
 
 object VrtRepo {
 
-  def indexes(ttl: Long): Seq[IndexModel] = Seq(
-    IndexModel(keys = Indexes.ascending("vrn")),
-    IndexModel(keys = Indexes.ascending("repaymentDetailsData.periodKey")),
-    IndexModel(keys = Indexes.ascending("repaymentDetailsData.riskingStatus")),
-    IndexModel(
-      keys         = Indexes.ascending("createdOn"),
-      indexOptions = IndexOptions().expireAfter(ttl, TimeUnit.SECONDS)
-    )
+  def indexes(ttl: Long): Seq[IndexModel] = Seq( //    IndexModel(keys = Indexes.ascending("vrn")),
+  //    IndexModel(keys = Indexes.ascending("repaymentDetailsData.periodKey")),
+  //    IndexModel(keys = Indexes.ascending("repaymentDetailsData.riskingStatus")),
+  //    IndexModel(
+  //      keys         = Indexes.ascending("createdOn"),
+  //      indexOptions = IndexOptions().expireAfter(ttl, TimeUnit.SECONDS)
+  //    )
   )
 
-  implicit val journeyId: Id[VrtId] = (i: VrtId) => i.value
+  implicit val vrtId: Id[VrtId] = (i: VrtId) => i.value
 
-  implicit val journeyIdExtractor: IdExtractor[VrtRepaymentDetailData, VrtId] = (v: VrtRepaymentDetailData) => v._id.getOrElse(throw new RuntimeException(s"No id for $v (should be impossible)"))
+  implicit val vrtIdExtractor: IdExtractor[VrtRepaymentDetailData, VrtId] = (v: VrtRepaymentDetailData) => v._id.getOrElse(throw new RuntimeException(s"No id for $v (should be impossible)"))
 }
