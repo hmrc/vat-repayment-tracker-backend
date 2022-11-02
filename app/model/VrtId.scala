@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,17 +15,17 @@
  */
 
 package model
+
 import controllers.ValueClassBinder.valueClassBinder
-import play.api.libs.functional.syntax._
+import org.bson.types.ObjectId
 import play.api.libs.json._
 import play.api.mvc.PathBindable
-import reactivemongo.bson.BSONObjectID
 
 final case class VrtId(value: String)
 
 object VrtId {
-  implicit val format: Format[VrtId] = implicitly[Format[String]].inmap(VrtId(_), _.value)
+  implicit val format: Format[VrtId] = Json.valueFormat
   implicit val journeyIdBinder: PathBindable[VrtId] = valueClassBinder(_.value)
-  def fresh: VrtId = VrtId(BSONObjectID.generate.stringify)
+  def generate: VrtId = VrtId(ObjectId.get().toString)
 }
 

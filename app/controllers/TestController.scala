@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,9 +37,10 @@ import java.time.LocalDate.now
 import javax.inject.{Inject, Singleton}
 import model.des.RepaymentDetailData
 import model.des.RiskingStatus._
-import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData}
+import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailDataMongo, VrtRepaymentDetailData}
+import org.bson.types.ObjectId
+import org.mongodb.scala.model.Filters.in
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
-import reactivemongo.bson.BSONObjectID
 import repository.VrtRepo
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -49,7 +50,7 @@ import scala.util.Random
 class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implicit ec: ExecutionContext)
   extends VrtController(cc, repo) {
 
-  private val r: Random.type = scala.util.Random
+  private val random: Random.type = scala.util.Random
   private def date: String = now().toString
 
   val possibleRiskStatus = Seq(INITIAL, SENT_FOR_RISKING, CLAIM_QUERIED)
@@ -64,7 +65,8 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
   }
 
   def removeTestData(): Action[AnyContent] = Action.async {
-    repo.removeByPeriodKeyForTest(possiblePeriods.toList).map(_ => Ok("Test data removed"))
+    repo.collection.deleteMany(in ("repaymentDetailsData.periodKey", possiblePeriods)).toFuture()
+      .map(_ => Ok("Test data removed"))
   }
 
   def insertTestData(start: Int, end: Int, rows: Int): Action[AnyContent] = Action.async {
@@ -73,25 +75,28 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
     }
   }
 
-  private def insertRows(current: Int, rows: Int): Future[Int] =
-    repo.bulkInsert(bulkVrtRepaymentDetailData(current, rows)).map(inserted => inserted.n)
+  private def insertRows(current: Int, rows: Int): Future[Int] = {
+    repo.collection.insertMany(bulkVrtRepaymentDetailData(current, rows))
+      .toFuture()
+      .map(_.getInsertedIds.keySet().size())
+  }
 
-  private def bulkVrtRepaymentDetailData(current: Int, rows: Int): Seq[VrtRepaymentDetailData] =
+  private def bulkVrtRepaymentDetailData(current: Int, rows: Int): Seq[VrtRepaymentDetailDataMongo] =
     for (n <- 1 to rows) yield vrtRepaymentDetailData(Vrn(s"$current$n"))
 
   private def vrtRepaymentDetailData(vrn: Vrn) =
-    VrtRepaymentDetailData(
-      Some(VrtId(BSONObjectID.generate.stringify)),
-      now(),
-      vrn,
-      RepaymentDetailData(
-        LocalDate.parse(date),
-        Option(LocalDate.parse(date)),
-        Option(LocalDate.parse(date)),
-        possiblePeriods(r.nextInt(possiblePeriods.length)).value,
-        possibleRiskStatus(r.nextInt(possibleRiskStatus.length)),
-        r.nextInt(100),
-        Option(1),
-        r.nextInt(100)))
+    VrtRepaymentDetailDataMongo(
+      _id                  = VrtId(ObjectId.get.toString),
+      creationDate         = now(),
+      vrn                  = vrn,
+      repaymentDetailsData = RepaymentDetailData(
+        returnCreationDate     = LocalDate.parse(date),
+        sentForRiskingDate     = Option(LocalDate.parse(date)),
+        lastUpdateReceivedDate = Option(LocalDate.parse(date)),
+        periodKey              = possiblePeriods(random.nextInt(possiblePeriods.length)).value,
+        riskingStatus          = possibleRiskStatus(random.nextInt(possibleRiskStatus.length)),
+        random.nextInt(100),
+        supplementDelayDays = Option(1),
+        random.nextInt(100)))
 }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,14 +18,14 @@ package model
 
 import controllers.ValueClassBinder.valueClassBinder
 import play.api.libs.functional.syntax._
-import play.api.libs.json.Format
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.PathBindable
 
 final case class PeriodKey(value: String)
 
 object PeriodKey {
 
-  implicit val format: Format[PeriodKey] = implicitly[Format[String]].inmap(PeriodKey(_), _.value)
+  implicit val format: Format[PeriodKey] = Json.valueFormat
   implicit val vrnBinder: PathBindable[PeriodKey] = valueClassBinder(_.value)
 
 }

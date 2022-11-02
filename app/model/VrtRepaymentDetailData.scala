@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,25 @@
 
 package model
 
+import model.des.RepaymentDetailData
+import play.api.libs.json.{Json, OFormat}
+
 import java.time.LocalDate
 
-import play.api.libs.json.{Json, OFormat}
-import model.des.RepaymentDetailData
-
-final case class VrtRepaymentDetailData(_id: Option[VrtId], creationDate: LocalDate, vrn: Vrn, repaymentDetailsData: RepaymentDetailData)
+/***
+ * VrtRepaymentDetailData is the model to be used to
+ * POST from frontend to backend and to GET from backend
+ */
+final case class VrtRepaymentDetailData(creationDate: LocalDate, vrn: Vrn, repaymentDetailsData: RepaymentDetailData)
 
 object VrtRepaymentDetailData {
   implicit val format: OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
 
+  def apply(mongo: VrtRepaymentDetailDataMongo): VrtRepaymentDetailData = {
+    VrtRepaymentDetailData(
+      creationDate         = mongo.creationDate,
+      vrn                  = mongo.vrn,
+      repaymentDetailsData = mongo.repaymentDetailsData
+    )
+  }
 }
