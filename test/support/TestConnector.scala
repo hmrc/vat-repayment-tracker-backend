@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,8 @@ import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{GET, POST, route, writeableOf_AnyContentAsEmpty, writeableOf_AnyContentAsJson}
+import uk.gov.hmrc.http.{HeaderNames, SessionKeys}
+
 import scala.concurrent.Future
 
 @Singleton
@@ -30,6 +32,7 @@ class TestConnector @Inject() (app: Application) {
 
   def store(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] = {
     val req = FakeRequest(POST, "/vat-repayment-tracker-backend/store").withJsonBody(Json.toJson(vrtRepaymentDetailData))
+      .withHeaders(HeaderNames.authorisation -> "authToken")
 
     route(app, req).getOrElse(Future.failed(new Exception))
   }
@@ -42,6 +45,7 @@ class TestConnector @Inject() (app: Application) {
 
   def find(vrn: Vrn, periodKey: PeriodKey): Future[Result] = {
     val req = FakeRequest(GET, s"/vat-repayment-tracker-backend/find/vrn/${vrn.value}/${periodKey.value}")
+      .withHeaders(HeaderNames.authorisation -> "authToken")
 
     route(app, req).getOrElse(Future.failed(new Exception))
   }
