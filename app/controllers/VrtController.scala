@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package controllers
 
-import javax.inject.Inject
-import model.{PeriodKey, VrtId, VrtRepaymentDetailDataMongo, VrtRepaymentDetailData}
-import play.api.{Logger, Logging}
+import model.{PeriodKey, VrtId, VrtRepaymentDetailData, VrtRepaymentDetailDataMongo}
+import play.api.Logging
 import play.api.mvc.{ControllerComponents, Request, Result}
 import repository.VrtRepo
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)

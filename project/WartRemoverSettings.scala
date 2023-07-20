@@ -1,6 +1,6 @@
 import sbt.Compile
 import sbt.Keys.compile
-import wartremover.{Wart, wartremoverErrors, wartremoverWarnings}
+import wartremover.Wart
 
 object  WartRemoverSettings {
 
@@ -31,7 +31,6 @@ object  WartRemoverSettings {
       Wart.OptionPartial,
       Wart.Recursion,
       Wart.Return,
-      Wart.TraversableOps,
       Wart.TryPartial,
       Wart.Var,
       Wart.While)

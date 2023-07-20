@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2023 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,17 +32,17 @@
 
 package controllers
 
-import java.time.LocalDate
-import java.time.LocalDate.now
-import javax.inject.{Inject, Singleton}
-import model.des.RepaymentDetailData
+import model.des.{RepaymentDetailData, RiskingStatus}
 import model.des.RiskingStatus._
-import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailDataMongo, VrtRepaymentDetailData}
+import model._
 import org.bson.types.ObjectId
 import org.mongodb.scala.model.Filters.in
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import repository.VrtRepo
 
+import java.time.LocalDate
+import java.time.LocalDate.now
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.Random
 
@@ -53,7 +53,7 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
   private val random: Random.type = scala.util.Random
   private def date: String = now().toString
 
-  val possibleRiskStatus = Seq(INITIAL, SENT_FOR_RISKING, CLAIM_QUERIED)
+  val possibleRiskStatus: Seq[RiskingStatus] = Seq(INITIAL, SENT_FOR_RISKING, CLAIM_QUERIED)
 
   val possiblePeriods = Seq(PeriodKey("16AA"), PeriodKey("16AB"), PeriodKey("16AC"), PeriodKey("16AD"), PeriodKey("16AE"), PeriodKey("16AF"), PeriodKey("16AG"), PeriodKey("16AH"), PeriodKey("16AI"), PeriodKey("16AJ"), PeriodKey("16AK"), PeriodKey("16AL"),
                             PeriodKey("16YA"), PeriodKey("16YB"), PeriodKey("16YC"), PeriodKey("16YD"), PeriodKey("16YE"), PeriodKey("16YF"), PeriodKey("16YG"), PeriodKey("16YH"), PeriodKey("16YI"), PeriodKey("16YJ"), PeriodKey("16YK"), PeriodKey("16YL"),
@@ -71,7 +71,7 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
 
   def insertTestData(start: Int, end: Int, rows: Int): Action[AnyContent] = Action.async {
     Future.sequence(for (n <- start to end) yield insertRows(n, rows)).map { result =>
-      Ok(s"Inserted ${result.sum} rows ")
+      Ok(s"Inserted ${result.sum.toString} rows ")
     }
   }
 
@@ -82,7 +82,7 @@ class TestController @Inject() (cc: ControllerComponents, repo: VrtRepo)(implici
   }
 
   private def bulkVrtRepaymentDetailData(current: Int, rows: Int): Seq[VrtRepaymentDetailDataMongo] =
-    for (n <- 1 to rows) yield vrtRepaymentDetailData(Vrn(s"$current$n"))
+    for (n <- 1 to rows) yield vrtRepaymentDetailData(Vrn(s"${current.toString}${n.toString}"))
 
   private def vrtRepaymentDetailData(vrn: Vrn) =
     VrtRepaymentDetailDataMongo(
