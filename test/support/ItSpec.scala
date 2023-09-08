@@ -69,6 +69,7 @@ trait ItSpec
       override def configure(): Unit = ()
     })))
     .configure(Map[String, Any](
+      "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
       "mongodb.uri " -> "mongodb://localhost:27017/vat-repayment-tracker-backend-it",
       "microservice.services.auth.port" -> WireMockSupport.port
     )).build()

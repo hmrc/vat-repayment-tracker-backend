@@ -5,7 +5,7 @@ import sbt._
 object AppDependencies {
 
   val hmrcMongoVersion = "1.3.0"
-  val bootstrapVersion = "7.19.0"
+  val bootstrapVersion = "7.22.0"
   val jacksonVersion = "2.13.2"
   val jacksonDatabindVersion = "2.13.2.2"
 
@@ -40,13 +40,13 @@ object AppDependencies {
   }
 
   val test = Seq(
-    "org.scalatest"           %% "scalatest"                % "3.2.16"                % Test,
+    "org.scalatest"           %% "scalatest"                % "3.2.17"                % Test,
     "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapVersion        % Test,
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % hmrcMongoVersion        % Test,
     "com.vladsch.flexmark"     % "flexmark-all"             % "0.64.6"                % "test, it",
     "com.typesafe.play"       %% "play-test"                % current                 % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                 % Test,
-    "com.github.tomakehurst"   % "wiremock-jre8"            % "2.35.0"                % Test
+    "org.wiremock"             % "wiremock-standalone"      % "3.0.3"                % Test
   )
 
 }
