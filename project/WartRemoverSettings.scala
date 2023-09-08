@@ -12,7 +12,7 @@ object  WartRemoverSettings {
       Wart.IsInstanceOf
       // Wart.Any
     )
-    wartremover.WartRemover.autoImport.wartremoverWarnings in(Compile, compile) ++= warningWarts
+    Compile / compile / wartremover.WartRemover.autoImport.wartremoverWarnings ++= warningWarts
   }
   lazy val wartRemoverError = {
     // Error
@@ -35,6 +35,6 @@ object  WartRemoverSettings {
       Wart.Var,
       Wart.While)
 
-    wartremover.WartRemover.autoImport.wartremoverErrors in(Compile, compile) ++= errorWarts
+    Compile / compile / wartremover.WartRemover.autoImport.wartremoverErrors ++= errorWarts
   }
 }

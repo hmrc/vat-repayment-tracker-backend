@@ -1,6 +1,5 @@
 
 import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
-import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 import wartremover.Wart
 import sbt.VersionScheme
 import sbt.Keys.*
@@ -60,3 +59,13 @@ lazy val microservice = Project(appName, file("."))
     )
   )
   .settings(Compile / scalacOptions -= "utf8")
+  .settings(
+    commands += Command.command("runTestOnly") { state =>
+      state.globalLogging.full.info("running play using 'testOnlyDoNotUseInAppConf' routes...")
+      s"""set javaOptions += "-Dplay.http.router=testOnlyDoNotUseInAppConf.Routes"""" ::
+        "run" ::
+        s"""set javaOptions -= "-Dplay.http.router=testOnlyDoNotUseInAppConf.Routes"""" ::
+        state
+    }
+  )
+
