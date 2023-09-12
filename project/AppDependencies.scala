@@ -46,7 +46,7 @@ object AppDependencies {
     "com.vladsch.flexmark"     % "flexmark-all"             % "0.64.6"                % "test, it",
     "com.typesafe.play"       %% "play-test"                % current                 % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                 % Test,
-    "org.wiremock"             % "wiremock-standalone"      % "3.0.3"                % Test
+    "org.wiremock"             % "wiremock-standalone"      % "3.0.4"                % Test
   )
 
 }
