@@ -6,26 +6,11 @@ object AppDependencies {
 
   val hmrcMongoVersion = "1.3.0"
   val bootstrapVersion = "7.22.0"
-  val jacksonVersion = "2.13.2"
-  val jacksonDatabindVersion = "2.13.2.2"
+  val jacksonVersion = "2.15.2"
 
-  val jacksonOverrides = Seq(
+  // Provides newer jackson-databind than provided by play to avoid CVE-2020-36518 (MDTP Platform Catalogue id) vulnerability
+  val jacksonOverride = Seq(
     // format: OFF
-    "com.fasterxml.jackson.core" % "jackson-core",
-    "com.fasterxml.jackson.core" % "jackson-annotations",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-jdk8",
-    "com.fasterxml.jackson.datatype" % "jackson-datatype-jsr310"
-    // format: ON
-  ).map(_ % jacksonVersion)
-
-  val jacksonDatabindOverrides = Seq(
-    "com.fasterxml.jackson.core" % "jackson-databind" % jacksonDatabindVersion
-  )
-
-  val akkaSerializationJacksonOverrides = Seq(
-    // format: OFF
-    "com.fasterxml.jackson.dataformat" % "jackson-dataformat-cbor",
-    "com.fasterxml.jackson.module" % "jackson-module-parameter-names",
     "com.fasterxml.jackson.module" %% "jackson-module-scala"
     // format: ON
   ).map(_ % jacksonVersion)
@@ -34,9 +19,12 @@ object AppDependencies {
     val dependencies = Seq(
       "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"          % hmrcMongoVersion,
       "uk.gov.hmrc"             %% "bootstrap-backend-play-28"   % bootstrapVersion,
-      "com.beachape"            %% "enumeratum-play"             % "1.7.2"
+      "com.beachape"            %% "enumeratum-play"             % "1.7.2",
     )
-    dependencies ++ jacksonDatabindOverrides ++ jacksonOverrides ++ akkaSerializationJacksonOverrides
+    dependencies ++
+//      jacksonDatabindOverrides ++
+//      jacksonOverrides ++
+      jacksonOverride
   }
 
   val test = Seq(
