@@ -22,8 +22,6 @@ object AppDependencies {
       "com.beachape"            %% "enumeratum-play"             % "1.7.2",
     )
     dependencies ++
-//      jacksonDatabindOverrides ++
-//      jacksonOverrides ++
       jacksonOverride
   }
 
