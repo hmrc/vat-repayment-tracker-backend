@@ -29,7 +29,9 @@ object SbtUpdatesSettings {
     dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.core"),
     dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.datatype"),
     dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.dataformat"),
-    dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.module")
+    dependencyUpdatesFilter -= moduleFilter("com.fasterxml.jackson.module"),
+    // locked by version of play
+    dependencyUpdatesFilter -= moduleFilter("org.scalatestplus.play", "scalatestplus-play")
   )
 
 }
