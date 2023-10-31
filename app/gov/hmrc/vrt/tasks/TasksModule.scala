@@ -17,6 +17,6 @@ class RenameCollectionTask @Inject()(mongoComponent: MongoComponent)(implicit ec
   mongoComponent.client
     .getDatabase("vat-repayment-tracker-backend")
     .getCollection("repayment-details-new-mongo")
-    .renameCollection(MongoNamespace("vat-repayment-tracker-backend", "repayment-details-new-mongo"))
+    .renameCollection(MongoNamespace("vat-repayment-tracker-backend", "repayment-details"))
     .map { _ => logger.info("**************** collection rename task done.") }
 }
