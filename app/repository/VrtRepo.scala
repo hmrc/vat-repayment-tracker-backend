@@ -31,7 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
   extends Repo[VrtId, VrtRepaymentDetailDataMongo](
-    collectionName = "repayment-details-new-mongo",
+    collectionName = "repayment-details",
     mongoComponent = mongoComponent,
     indexes        = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
     replaceIndexes = true) {
@@ -58,7 +58,7 @@ object VrtRepo {
     IndexModel(keys = Indexes.ascending("repaymentDetailsData.periodKey")),
     IndexModel(keys = Indexes.ascending("repaymentDetailsData.riskingStatus")),
     IndexModel(
-      keys         = Indexes.ascending("createdOn"),
+      keys         = Indexes.ascending("creationDate"),
       indexOptions = IndexOptions().expireAfter(ttl, TimeUnit.SECONDS)
     )
   )
