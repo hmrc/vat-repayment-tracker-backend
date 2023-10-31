@@ -23,16 +23,21 @@ import play.api.inject._
 import uk.gov.hmrc.mongo.MongoComponent
 
 import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 class TasksModule extends SimpleModule(bind[RenameCollectionTask].toSelf.eagerly())
 
 @Singleton
-class RenameCollectionTask @Inject() (mongoComponent: MongoComponent) extends Logging {
+class RenameCollectionTask @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext) extends Logging {
   logger.info("**************** Start collection rename task...")
 
   mongoComponent.client
     .getDatabase("vat-repayment-tracker-backend")
     .getCollection("repayment-details-new-mongo")
-    .renameCollection(MongoNamespace("vat-repayment-tracker-backend", "repayment-details"), RenameCollectionOptions().dropTarget(true))
+    .renameCollection(
+      MongoNamespace("vat-repayment-tracker-backend", "repayment-details"),
+      RenameCollectionOptions().dropTarget(true)
+    )
+    .toFuture()
     .map { _ => logger.info("**************** collection rename task done.") }
 }
