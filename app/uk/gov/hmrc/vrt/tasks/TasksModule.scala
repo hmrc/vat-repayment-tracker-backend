@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.vrt.tasks
 
+import org.mongodb.scala.MongoNamespace
+import org.mongodb.scala.model.RenameCollectionOptions
 import play.api.Logging
 import play.api.inject._
 import uk.gov.hmrc.mongo.MongoComponent
@@ -23,16 +25,16 @@ import uk.gov.hmrc.mongo.MongoComponent
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-class TasksModule extends SimpleModule(bind[CleanupTask].toSelf.eagerly())
+class TasksModule extends SimpleModule(bind[RenameCollectionTask].toSelf.eagerly())
 
 @Singleton
-class CleanupTask @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext) extends Logging {
-  logger.warn("**************** Start cleanup tasks...")
+class RenameCollectionTask @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext) extends Logging {
+  logger.info("**************** Start collection rename task...")
 
   mongoComponent.client
-    .getDatabase("vat-repayment-tracker-backend") // update
-    .getCollection("repayment-details") // update
-    .drop()
+    .getDatabase("vat-repayment-tracker-backend")
+    .getCollection("repayment-details-new-mongo")
+    .renameCollection(MongoNamespace("vat-repayment-tracker-backend", "repayment-details"))
     .toFuture()
-    .map { _ => logger.warn("**************** cleanup done.") }
+    .map { _ => logger.info("**************** collection rename task done.") }
 }
