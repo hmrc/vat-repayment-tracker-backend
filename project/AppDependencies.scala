@@ -5,7 +5,7 @@ import sbt._
 object AppDependencies {
 
   val hmrcMongoVersion = "1.3.0"
-  val bootstrapVersion = "7.22.0"
+  val bootstrapVersion = "7.23.0"
 
 
   val compile =  {
@@ -24,7 +24,7 @@ object AppDependencies {
     "com.vladsch.flexmark"     % "flexmark-all"             % "0.64.6"                % "test, it",
     "com.typesafe.play"       %% "play-test"                % current                 % Test,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                 % Test,
-    "org.wiremock"             % "wiremock-standalone"      % "3.2.0"                 % Test
+    "org.wiremock"             % "wiremock-standalone"      % "3.3.1"                 % Test
   )
 
 }
