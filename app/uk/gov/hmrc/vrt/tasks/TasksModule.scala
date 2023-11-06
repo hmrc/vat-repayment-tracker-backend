@@ -29,12 +29,12 @@ class TasksModule extends SimpleModule(bind[RenameCollectionTask].toSelf.eagerly
 
 @Singleton
 class RenameCollectionTask @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext) extends Logging {
-  logger.info("**************** Start collection rename task...")
+  logger.warn("**************** Start collection rename task...")
 
   mongoComponent.client
     .getDatabase("vat-repayment-tracker-backend")
     .getCollection("repayment-details-new-mongo")
     .renameCollection(MongoNamespace("vat-repayment-tracker-backend", "repayment-details"))
     .toFuture()
-    .map { _ => logger.info("**************** collection rename task done.") }
+    .map { _ => logger.warn("**************** collection rename task done.") }
 }
