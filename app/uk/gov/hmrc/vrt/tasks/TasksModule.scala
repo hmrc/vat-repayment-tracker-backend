@@ -27,12 +27,12 @@ class TasksModule extends SimpleModule(bind[CleanupTask].toSelf.eagerly())
 
 @Singleton
 class CleanupTask @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext) extends Logging {
-  logger.info("**************** Start cleanup tasks...")
+  logger.warn("**************** Start cleanup tasks...")
 
   mongoComponent.client
     .getDatabase("vat-repayment-tracker-backend") // update
     .getCollection("repayment-details") // update
     .drop()
     .toFuture()
-    .map { _ => logger.info("**************** cleanup done.") }
+    .map { _ => logger.warn("**************** cleanup done.") }
 }
