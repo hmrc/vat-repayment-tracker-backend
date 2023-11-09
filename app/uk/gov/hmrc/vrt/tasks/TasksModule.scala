@@ -33,11 +33,11 @@ class RenameCollectionTask @Inject() (
   logger.warn("**************** STARTING Mongo clean-up task: Starting to transfer legacy documents to active collection...")
 
   legacyRepo.allDocumentsInNewMongo.flatMap { allDocuments =>
-    logger.warn(s"**************** Mongo clean-up task: ${allDocuments.length} legacy documents retrieved from legacy collection...")
+    logger.warn(s"**************** Mongo clean-up task: ${allDocuments.length.toString} legacy documents retrieved from legacy collection...")
 
     activeRepo.collection.insertMany(allDocuments).toFuture()
 
-    } map { result =>
-    logger.warn(s"**************** Mongo clean-up task: Insertion of legacy documents into active collection acknowledged? ${result.wasAcknowledged()}")
-    }
+  } map { result =>
+    logger.warn(s"**************** Mongo clean-up task: Insertion of legacy documents into active collection acknowledged? ${result.wasAcknowledged().toString}")
+  }
 }
