@@ -16,25 +16,28 @@
 
 package uk.gov.hmrc.vrt.tasks
 
-import org.mongodb.scala.MongoNamespace
-import org.mongodb.scala.model.RenameCollectionOptions
 import play.api.Logging
 import play.api.inject._
-import uk.gov.hmrc.mongo.MongoComponent
+import repository.VrtRepo
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-class TasksModule extends SimpleModule(bind[RenameCollectionTask].toSelf.eagerly())
+class TasksModule extends SimpleModule(bind[CopyCacheDocuments].toSelf.eagerly())
 
 @Singleton
-class RenameCollectionTask @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext) extends Logging {
-  logger.warn("**************** Start collection rename task...")
+class CopyCacheDocuments @Inject()(
+    legacyRepo: TempVrtNewMongoRepo,
+    activeRepo: VrtRepo
+)(implicit ec: ExecutionContext) extends Logging {
+  logger.warn("**************** STARTING Mongo clean-up task: Starting to transfer legacy documents to active collection...")
 
-  mongoComponent.client
-    .getDatabase("vat-repayment-tracker-backend")
-    .getCollection("repayment-details-new-mongo")
-    .renameCollection(MongoNamespace("vat-repayment-tracker-backend", "repayment-details"))
-    .toFuture()
-    .map { _ => logger.warn("**************** collection rename task done.") }
+  legacyRepo.allDocumentsInNewMongo.flatMap { allDocuments =>
+    logger.warn(s"**************** Mongo clean-up task: ${allDocuments.length.toString} legacy documents retrieved from legacy collection...")
+
+    activeRepo.collection.insertMany(allDocuments).toFuture()
+
+  } map { result =>
+    logger.warn(s"**************** Mongo clean-up task: Insertion of legacy documents into active collection acknowledged? ${result.wasAcknowledged().toString}")
+  }
 }
