@@ -23,10 +23,10 @@ import repository.VrtRepo
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-class TasksModule extends SimpleModule(bind[RenameCollectionTask].toSelf.eagerly())
+class TasksModule extends SimpleModule(bind[CopyCacheDocuments].toSelf.eagerly())
 
 @Singleton
-class RenameCollectionTask @Inject() (
+class CopyCacheDocuments @Inject()(
     legacyRepo: TempVrtNewMongoRepo,
     activeRepo: VrtRepo
 )(implicit ec: ExecutionContext) extends Logging {
