@@ -32,20 +32,12 @@ class RenameCollectionTask @Inject() (
 )(implicit ec: ExecutionContext) extends Logging {
   logger.warn("**************** STARTING Mongo clean-up task: Starting to transfer legacy documents to active collection...")
 
-  legacyRepo.allDocumentsInNewMongo
-    .map { allDocuments =>
-      logger.warn("**************** Mongo clean-up task: Legacy documents retrieved from legacy collection...")
+  legacyRepo.allDocumentsInNewMongo.flatMap { allDocuments =>
+    logger.warn(s"**************** Mongo clean-up task: ${allDocuments.length} legacy documents retrieved from legacy collection...")
 
-      allDocuments.foreach { document =>
-        logger.warn(s"**************** Mongo clean-up task: copying document ${document._id.toString}...")
-        activeRepo.upsert(document)
-      }
-    } map { _ =>
-      logger.warn(s"**************** Mongo clean-up task: all documents copied across. Now dropping legacy collection...")
-      legacyRepo.collection.drop().toFuture()
-        .map{ _ =>
-          logger.warn("**************** COMPLETE Mongo clean-up task: Legacy documents inserted to active collection.")
-        }
+    activeRepo.collection.insertMany(allDocuments).toFuture()
 
+    } map { result =>
+    logger.warn(s"**************** Mongo clean-up task: Insertion of legacy documents into active collection acknowledged? ${result.wasAcknowledged()}")
     }
 }
