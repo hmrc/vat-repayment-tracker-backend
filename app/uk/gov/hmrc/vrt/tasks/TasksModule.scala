@@ -19,25 +19,21 @@ package uk.gov.hmrc.vrt.tasks
 import play.api.Logging
 import play.api.inject._
 import repository.VrtRepo
+import uk.gov.hmrc.mongo.MongoComponent
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
-class TasksModule extends SimpleModule(bind[CopyCacheDocuments].toSelf.eagerly())
+class TasksModule extends SimpleModule(bind[DropUnusedLegacyCollection].toSelf.eagerly())
 
 @Singleton
-class CopyCacheDocuments @Inject()(
-    legacyRepo: TempVrtNewMongoRepo,
-    activeRepo: VrtRepo
-)(implicit ec: ExecutionContext) extends Logging {
-  logger.warn("**************** STARTING Mongo clean-up task: Starting to transfer legacy documents to active collection...")
+class DropUnusedLegacyCollection @Inject() (mongoComponent: MongoComponent)(implicit ec: ExecutionContext) extends Logging {
+  logger.warn("**************** Start drop of unused legacy collection...")
 
-  legacyRepo.allDocumentsInNewMongo.flatMap { allDocuments =>
-    logger.warn(s"**************** Mongo clean-up task: ${allDocuments.length.toString} legacy documents retrieved from legacy collection...")
-
-    activeRepo.collection.insertMany(allDocuments).toFuture()
-
-  } map { result =>
-    logger.warn(s"**************** Mongo clean-up task: Insertion of legacy documents into active collection acknowledged? ${result.wasAcknowledged().toString}")
-  }
+  mongoComponent.client
+    .getDatabase("vat-repayment-tracker-backend") // update
+    .getCollection("repayment-details-new-mongo") // update
+    .drop()
+    .toFuture()
+    .map { _ => logger.info("**************** drop of unused legacy collection done.") }
 }
