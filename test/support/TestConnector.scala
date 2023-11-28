@@ -23,7 +23,7 @@ import play.api.libs.json.Json
 import play.api.mvc.Result
 import play.api.test.FakeRequest
 import play.api.test.Helpers.{GET, POST, route, writeableOf_AnyContentAsEmpty, writeableOf_AnyContentAsJson}
-import uk.gov.hmrc.http.{HeaderNames, SessionKeys}
+import uk.gov.hmrc.http.HeaderNames
 
 import scala.concurrent.Future
 

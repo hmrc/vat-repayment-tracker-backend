@@ -17,7 +17,6 @@
 package model
 
 import controllers.ValueClassBinder.valueClassBinder
-import play.api.libs.functional.syntax._
 import play.api.libs.json.{Format, Json}
 import play.api.mvc.PathBindable
 
