@@ -6,7 +6,7 @@ import sbt.Keys.*
 import play.sbt.PlayImport.PlayKeys
 
 val appName = "vat-repayment-tracker-backend"
-val appScalaVersion = "2.13.10"
+val appScalaVersion = "2.13.12"
 scalaVersion := appScalaVersion
 
 
