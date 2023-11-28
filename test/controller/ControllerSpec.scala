@@ -16,7 +16,7 @@
 
 package controller
 
-import model.EnrolmentKeys.mtdVatEnrolmentKey
+import model.EnrolmentKeys.{mtdVatEnrolmentKey, vatDecEnrolmentKey, vatVarEnrolmentKey}
 import model._
 import model.des.RiskingStatus.SENT_FOR_RISKING
 import play.api.http.Status
@@ -54,6 +54,17 @@ class ControllerSpec extends ItSpec with Status {
     val result = testConnector.store(vrtData)
     status(result) shouldBe OK
     contentAsString(result) shouldBe "updated 1 record"
+  }
+
+  "store data for class VRN's" in {
+    List(vatDecEnrolmentKey, vatVarEnrolmentKey).foreach{ enrolmentKey =>
+      withClue(s"For enrolment key '$enrolmentKey': "){
+        givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = enrolmentKey)
+        val result = testConnector.store(vrtData)
+        status(result) shouldBe OK
+        contentAsString(result) shouldBe "updated 1 record"
+      }
+    }
   }
 
   "store data testOnly" in {

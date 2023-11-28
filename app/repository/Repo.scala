@@ -32,8 +32,7 @@ abstract class Repo[ID, A: ClassTag](
     indexes:        Seq[IndexModel],
     extraCodecs:    Seq[Codec[_]]   = Seq.empty,
     replaceIndexes: Boolean         = false
-)(implicit manifest: Manifest[A],
-  domainFormat:     OFormat[A],
+)(implicit domainFormat: OFormat[A],
   executionContext: ExecutionContext,
   id:               Id[ID],
   idExtractor:      IdExtractor[A, ID]
@@ -59,11 +58,6 @@ abstract class Repo[ID, A: ClassTag](
     .toFuture()
     .map(_ => ())
 
-  def findById(i: ID): Future[Option[A]] = collection
-    .find(
-      filter = Filters.eq("_id", id.value(i))
-    )
-    .headOption()
 }
 
 object Repo {

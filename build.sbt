@@ -47,15 +47,22 @@ lazy val microservice = Project(appName, file("."))
     scalacOptions ++= Seq(
       "-Xfatal-warnings",
       "-Xlint:-missing-interpolator,_",
-      "-Xlint:-byname-implicit",
+      "-Xlint:adapted-args",
+      "-Ywarn-unused:implicits",
+      "-Ywarn-unused:imports",
+      "-Ywarn-unused:locals",
+      "-Ywarn-unused:params",
+      "-Ywarn-unused:patvars",
+      "-Ywarn-unused:privates",
       "-Ywarn-value-discard",
-      "-Ywarn-unused:-imports",
       "-Ywarn-dead-code",
       "-deprecation",
       "-feature",
       "-unchecked",
-      "-language:reflectiveCalls",
-      "-language:implicitConversions"
+      "-language:implicitConversions",
+      // required in place of silencer plugin
+      "-Wconf:cat=unused-imports&src=html/.*:s",
+      "-Wconf:src=routes/.*:s"
     )
   )
   .settings(Compile / scalacOptions -= "utf8")
