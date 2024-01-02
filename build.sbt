@@ -18,8 +18,7 @@ lazy val microservice = Project(appName, file("."))
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
     retrieveManaged                  :=  true,
     routesGenerator                  :=  InjectedRoutesGenerator,
-    (update / evictionWarningOptions):=  EvictionWarningOptions.default.withWarnScalaVersionEviction(false),
-    libraryDependencySchemes         += "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always
+    (update / evictionWarningOptions):=  EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
   )
   .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .settings(majorVersion := 1)
@@ -35,8 +34,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 9212)
   .settings(scalaSettings *)
   .settings(defaultSettings() *)
-  .settings(integrationTestSettings())
-  .configs(IntegrationTest)
   .settings(resolvers += Resolver.jcenterRepo)
   .settings(
     routesImport ++= Seq(
