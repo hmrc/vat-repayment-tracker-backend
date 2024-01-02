@@ -5,26 +5,22 @@ import sbt._
 object AppDependencies {
 
   val hmrcMongoVersion = "1.6.0"
-  val bootstrapVersion = "8.1.0"
+  val bootstrapVersion = "8.3.0"
 
 
-  val compile =  {
-    val dependencies = Seq(
-      "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-28"          % hmrcMongoVersion,
-      "uk.gov.hmrc"             %% "bootstrap-backend-play-28"   % bootstrapVersion,
-      "com.beachape"            %% "enumeratum-play"             % "1.7.2"
+  val compile = Seq(
+      "uk.gov.hmrc.mongo"       %% "hmrc-mongo-play-30"          % hmrcMongoVersion,
+      "uk.gov.hmrc"             %% "bootstrap-backend-play-30"   % bootstrapVersion,
+      "com.beachape"            %% "enumeratum-play"             % "1.8.0"
     )
-    dependencies
-  }
 
   val test = Seq(
-    "org.scalatest"           %% "scalatest"                % "3.2.17"                % Test,
-    "uk.gov.hmrc"             %% "bootstrap-test-play-28"   % bootstrapVersion        % Test,
-    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-28"  % hmrcMongoVersion        % Test,
-    "com.vladsch.flexmark"     % "flexmark-all"             % "0.64.6"                % "test, it",
-    "com.typesafe.play"       %% "play-test"                % current                 % Test,
-    "org.scalatestplus.play"  %% "scalatestplus-play"       % "5.1.0"                 % Test,
-    "org.wiremock"             % "wiremock-standalone"      % "3.3.1"                 % Test
-  )
+    "org.scalatest"           %% "scalatest"                % "3.2.17"        ,
+    "uk.gov.hmrc"             %% "bootstrap-test-play-30"   % bootstrapVersion,
+    "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30"  % hmrcMongoVersion,
+    "org.playframework"       %% "play-test"                % current         ,
+    "org.scalatestplus.play"  %% "scalatestplus-play"       % "7.0.1"         ,
+    "org.wiremock"             % "wiremock-standalone"      % "3.3.1"
+  ).map(_ % Test)
 
 }
