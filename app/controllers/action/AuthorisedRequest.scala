@@ -24,8 +24,8 @@ import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 
 final class AuthorisedRequest[A](val request: Request[A], val enrolments: Enrolments) extends WrappedRequest[A](request) {
 
-  val enrolmentsVrn: Option[TypedVrn] =
-    enrolments.enrolments.collectFirst {
+  val enrolmentsVrn: Set[TypedVrn] =
+    enrolments.enrolments.collect {
       case Enrolment(key, identifiers, _, _) if key == mtdVatEnrolmentKey =>
         identifiers.collectFirst { case EnrolmentIdentifier(k, vrn) if Vrn.validVrnKey(k) => MtdVrn(Vrn(vrn)) }
 
