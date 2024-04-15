@@ -21,6 +21,8 @@ import model.EnrolmentKeys.{mtdVatEnrolmentKey, vatDecEnrolmentKey, vatVarEnrolm
 import model._
 import model.des.RiskingStatus.SENT_FOR_RISKING
 import play.api.http.Status
+import play.api.mvc.AnyContentAsEmpty
+import play.api.test.FakeRequest
 import repository.VrtRepo
 import support.AuthStub._
 import support.DesData.repaymentDetail
@@ -35,6 +37,7 @@ class ControllerSpec extends ItSpec with Status {
 
   private val vrn = Vrn("2345678890")
   private val vrn2 = Vrn("2345678891")
+  private val vrn3 = Vrn("2345678892")
   private val periodKey = PeriodKey("18AC")
   private val vrtData = VrtRepaymentDetailData(now(), vrn, repaymentDetail)
   private val vrtData2 = VrtRepaymentDetailData(now(), vrn2, repaymentDetail)
@@ -48,6 +51,10 @@ class ControllerSpec extends ItSpec with Status {
     repo.collection.drop().toFuture().futureValue
     ()
   }
+
+  def fakeRequest(method: String = "", url: String = ""): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(method, url).withHeaders(
+    uk.gov.hmrc.http.HeaderNames.authorisation -> "Bearer 123"
+  )
 
   import play.api.test.Helpers._
 
@@ -149,11 +156,8 @@ class ControllerSpec extends ItSpec with Status {
   }
 
   "findRepaymentData" in {
-    val mtdVrn: Vrn = Vrn("2345678890")
-    val newPeriodKey: PeriodKey = PeriodKey("16YA")
-    givenTheUserIsAuthenticatedAndAuthorised(vrn       = mtdVrn, enrolment = mtdVatEnrolmentKey)
-    val response = controller.findRepaymentData(mtdVrn, newPeriodKey)
-
-    response shouldBe 200
+    givenTheUserIsAuthenticatedAndAuthorisedWithSeveralEnrolments(vrnList = List(vrn2 -> vatVarEnrolmentKey, vrn -> mtdVatEnrolmentKey, vrn3 -> vatDecEnrolmentKey))
+    val response = controller.findRepaymentData(vrn, periodKey)(fakeRequest())
+    status(response) shouldBe 200
   }
 }
