@@ -20,7 +20,7 @@ object AppDependencies {
     "uk.gov.hmrc.mongo"       %% "hmrc-mongo-test-play-30"  % hmrcMongoVersion,
     "org.playframework"       %% "play-test"                % current         ,
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "7.0.1"         ,
-    "org.wiremock"             % "wiremock-standalone"      % "3.5.2"
+    "org.wiremock"             % "wiremock-standalone"      % "3.5.3"
   ).map(_ % Test)
 
 }
