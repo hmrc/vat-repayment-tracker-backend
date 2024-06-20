@@ -1,6 +1,7 @@
 
 # vat-repayment-tracker-backend
 
+
 ### What is vat repayment tracker
 
 Vat repayment tracker is a collection of services that allows users with a vat enrolment (MTD/NonMtd) to check the status of their vat repayments.
@@ -12,14 +13,37 @@ The other services that are related to it's functionality are:
     * GET financial-data 
     * GET repayment information
 
+---
+
+### Contents
+
+* [Running the locally](https://github.com/hmrc/vat-repayment-tracker-backend#running-locally)
+* [Running tests](https://github.com/hmrc/vat-repayment-tracker-backend#running-tests)
+* [Test data](https://github.com/hmrc/vat-repayment-tracker-backend#test-data)
+* [Further information](https://github.com/hmrc/vat-repayment-tracker-backend#further-information)
+* [Test suites](https://github.com/hmrc/vat-repayment-tracker-backend#test-suits)
+
+---
 
 ### Running Locally
 
-Service manager profile: `sm --start VRT_ALL`
+You can run the service locally using sbt: `sbt run`
+
+If running locally, the service runs on port `9212`
+
+Service manager profile: `sm2 --start VRT_ALL`
 
 *make sure you have mongo running
 
 ***To avoid memory leak use 'sbt -mem 2048 clean test compile'***
+
+---
+
+### Running tests
+
+You can run the tests locally using sbt: sbt test
+
+To run a specific test file, run `sbt 'testOnly *<SpecName>'`, e.g. `sbt 'testOnly *ControllerSpec'`
 
 ---
 
