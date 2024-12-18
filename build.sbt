@@ -17,8 +17,7 @@ lazy val microservice = Project(appName, file("."))
     scalaVersion := appScalaVersion,
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
     retrieveManaged                  :=  true,
-    routesGenerator                  :=  InjectedRoutesGenerator,
-    (update / evictionWarningOptions):=  EvictionWarningOptions.default.withWarnScalaVersionEviction(false)
+    routesGenerator                  :=  InjectedRoutesGenerator
   )
   .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .settings(majorVersion := 1)
