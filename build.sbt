@@ -1,20 +1,15 @@
-
-import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, integrationTestSettings, scalaSettings}
+import uk.gov.hmrc.DefaultBuildSettings.{defaultSettings, scalaSettings}
 import wartremover.Wart
-import sbt.VersionScheme
 import sbt.Keys.*
 import play.sbt.PlayImport.PlayKeys
 
 val appName = "vat-repayment-tracker-backend"
-val appScalaVersion = "2.13.16"
-scalaVersion := appScalaVersion
-
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
-    scalaVersion := appScalaVersion,
+    scalaVersion                     := "2.13.16",
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
     retrieveManaged                  :=  true,
     routesGenerator                  :=  InjectedRoutesGenerator
@@ -71,4 +66,3 @@ lazy val microservice = Project(appName, file("."))
         state
     }
   )
-
