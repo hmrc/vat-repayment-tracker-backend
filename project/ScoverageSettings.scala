@@ -1,5 +1,5 @@
 import sbt.Keys.parallelExecution
-import sbt._
+import sbt.*
 import scoverage.ScoverageKeys
 
 object ScoverageSettings {

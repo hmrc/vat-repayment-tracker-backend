@@ -1,5 +1,5 @@
-import sbt.Compile
-import sbt.Keys.compile
+import sbt.*
+import sbt.Keys.*
 import wartremover.Wart
 
 object  WartRemoverSettings {
@@ -10,7 +10,6 @@ object  WartRemoverSettings {
       Wart.StringPlusAny,
       Wart.AsInstanceOf,
       Wart.IsInstanceOf
-      // Wart.Any
     )
     Compile / compile / wartremover.WartRemover.autoImport.wartremoverWarnings ++= warningWarts
   }

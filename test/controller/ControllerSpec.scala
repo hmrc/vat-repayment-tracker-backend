@@ -23,6 +23,7 @@ import model.des.RiskingStatus.SENT_FOR_RISKING
 import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
+import play.api.test.Helpers._
 import repository.VrtRepo
 import support.AuthStub._
 import support.DesData.repaymentDetail
@@ -55,8 +56,6 @@ class ControllerSpec extends ItSpec with Status {
   def fakeRequest(method: String = "", url: String = ""): FakeRequest[AnyContentAsEmpty.type] = FakeRequest(method, url).withHeaders(
     uk.gov.hmrc.http.HeaderNames.authorisation -> "Bearer 123"
   )
-
-  import play.api.test.Helpers._
 
   "store data" in {
     givenTheUserIsAuthenticatedAndAuthorised(vrn       = vrn, enrolment = mtdVatEnrolmentKey)
