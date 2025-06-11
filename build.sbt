@@ -28,7 +28,6 @@ lazy val microservice = Project(appName, file("."))
   .settings(PlayKeys.playDefaultPort := 9212)
   .settings(scalaSettings *)
   .settings(defaultSettings() *)
-  .settings(resolvers += Resolver.jcenterRepo)
   .settings(
     routesImport ++= Seq(
        "model.Vrn",
