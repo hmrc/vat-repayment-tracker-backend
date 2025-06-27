@@ -28,7 +28,7 @@ import scala.concurrent.{ExecutionContext, Future}
 abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)
   (implicit executionContext: ExecutionContext) extends BackendController(cc) with Logging {
 
-  private[controllers] def store()(implicit request: Request[VrtRepaymentDetailData]): Future[Result] = {
+  def store()(implicit request: Request[VrtRepaymentDetailData]): Future[Result] = {
     val repaymentData: VrtRepaymentDetailData = request.body
     val periodKey = PeriodKey(repaymentData.repaymentDetailsData.periodKey)
     val riskingStatus = repaymentData.repaymentDetailsData.riskingStatus
