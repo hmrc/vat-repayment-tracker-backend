@@ -9,14 +9,14 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
-    scalaVersion                     := "2.13.16",
+    scalaVersion                     := "2.13.18",
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
     retrieveManaged                  :=  true,
     routesGenerator                  :=  InjectedRoutesGenerator
   )
   .settings(SbtUpdatesSettings.sbtUpdatesSettings)
   .settings(majorVersion := 1)
-  .settings(ScalariformSettings())
+  .settings(scalafmtOnCompile := true)
   .settings(ScoverageSettings())
   .settings(WartRemoverSettings.wartRemoverError)
   .settings(WartRemoverSettings.wartRemoverWarning)

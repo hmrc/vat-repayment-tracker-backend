@@ -16,17 +16,35 @@
 
 package controllers
 
-import model.{PeriodKey, VrtId, VrtRepaymentDetailData, VrtRepaymentDetailDataMongo}
+import controllers.action.Actions
+import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData, VrtRepaymentDetailDataMongo}
 import play.api.Logging
-import play.api.mvc.{ControllerComponents, Request, Result}
+import play.api.libs.json.Json
+import play.api.mvc.{Action, AnyContent, ControllerComponents, Request, Result}
 import repository.VrtRepo
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)
-  (implicit executionContext: ExecutionContext) extends BackendController(cc) with Logging {
+class VrtController @Inject() (
+    cc:      ControllerComponents,
+    actions: Actions,
+    repo:    VrtRepo
+)(implicit executionContext: ExecutionContext) extends BackendController(cc) with Logging {
+
+  def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions.authorised(vrn).async {
+    logger.debug(s"************ received vrn ${vrn.value}, periodKey : ${periodKey.value}")
+
+    repo.findByVrnAndPeriodKey(vrn, periodKey).map { data =>
+      val response = data.map(VrtRepaymentDetailData.apply)
+      Ok(Json.toJson(response))
+    }
+  }
+
+  def storeRepaymentData(): Action[VrtRepaymentDetailData] = actions.authorised.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
+    store()
+  }
 
   def store()(implicit request: Request[VrtRepaymentDetailData]): Future[Result] = {
     val repaymentData: VrtRepaymentDetailData = request.body
@@ -43,4 +61,5 @@ abstract class VrtController @Inject() (cc: ControllerComponents, repo: VrtRepo)
       Ok(s"updated 1 record")
     }
   }
+
 }

@@ -16,7 +16,7 @@
 
 package controller
 
-import controllers.Controller
+import controllers.VrtController
 import model.EnrolmentKeys.{mtdVatEnrolmentKey, vatDecEnrolmentKey, vatVarEnrolmentKey}
 import model._
 import model.des.RiskingStatus.SENT_FOR_RISKING
@@ -33,7 +33,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 
 import java.time.LocalDate.now
 
-class ControllerSpec extends ItSpec with Status {
+class VrtControllerSpec extends ItSpec with Status {
   implicit val emptyHC: HeaderCarrier = HeaderCarrier()
 
   private val vrn = Vrn("2345678890")
@@ -46,7 +46,7 @@ class ControllerSpec extends ItSpec with Status {
 
   private lazy val testConnector = injector.instanceOf[TestConnector]
   private lazy val repo = injector.instanceOf[VrtRepo]
-  private lazy val controller = injector.instanceOf[Controller]
+  private lazy val controller = injector.instanceOf[VrtController]
 
   override def beforeEach(): Unit = {
     repo.collection.drop().toFuture().futureValue
