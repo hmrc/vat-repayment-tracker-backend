@@ -37,6 +37,6 @@ trait WireMockSupport extends BeforeAndAfterAll with BeforeAndAfterEach {
 }
 
 object WireMockSupport {
-  val port: Int = 11111
+  val port: Int               = 11111
   val wireMockBaseUrlAsString = s"http://localhost:$port"
 }

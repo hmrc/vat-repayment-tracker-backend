@@ -26,11 +26,11 @@ import support.ItSpec
 class VrtRepoSpec extends ItSpec {
   private lazy val repo = injector.instanceOf[VrtRepo]
 
-  private val vrn = Vrn("2345678890")
-  private val vrn2 = Vrn("2345678891")
+  private val vrn       = Vrn("2345678890")
+  private val vrn2      = Vrn("2345678891")
   private val periodKey = PeriodKey("18AC")
-  private val id = VrtId(ObjectId.get.toString)
-  private val id2 = VrtId(ObjectId.get.toString)
+  private val id        = VrtId(ObjectId.get.toString)
+  private val id2       = VrtId(ObjectId.get.toString)
 
   override def beforeEach(): Unit = {
     repo.collection.drop().toFuture().futureValue
@@ -48,8 +48,8 @@ class VrtRepoSpec extends ItSpec {
   }
 
   "find records by vrn and periodKey" in {
-    val vrtData = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailDataMongo(id2, now(), vrn2, repaymentDetail)
+    val vrtData                                 = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
+    val vrtData2                                = VrtRepaymentDetailDataMongo(id2, now(), vrn2, repaymentDetail)
     repo.upsert(vrtData).futureValue
     repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2
@@ -58,12 +58,13 @@ class VrtRepoSpec extends ItSpec {
   }
 
   "find records by vrn, periodKey and riskingStatus" in {
-    val vrtData = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
-    val vrtData2 = VrtRepaymentDetailDataMongo(id2, now(), vrn, repaymentDetail2)
+    val vrtData                                 = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
+    val vrtData2                                = VrtRepaymentDetailDataMongo(id2, now(), vrn, repaymentDetail2)
     repo.upsert(vrtData).futureValue
     repo.upsert(vrtData2).futureValue
     collectionSize shouldBe 2
-    val found: Seq[VrtRepaymentDetailDataMongo] = repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, REPAYMENT_APPROVED).futureValue
+    val found: Seq[VrtRepaymentDetailDataMongo] =
+      repo.findByVrnAndPeriodKeyAndRiskingStatus(vrn, periodKey, REPAYMENT_APPROVED).futureValue
     found.size shouldBe 1
   }
 

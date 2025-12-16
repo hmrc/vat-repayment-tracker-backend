@@ -22,22 +22,25 @@ import uk.gov.hmrc.mongo.play.json.formats.MongoJavatimeFormats
 
 import java.time.LocalDate
 
-/***
- * VrtRepaymentDetailDataMongo is the model to be stored in mongo
- */
-final case class VrtRepaymentDetailDataMongo(_id: VrtId, creationDate: LocalDate, vrn: Vrn, repaymentDetailsData: RepaymentDetailData)
+/** * VrtRepaymentDetailDataMongo is the model to be stored in mongo
+  */
+final case class VrtRepaymentDetailDataMongo(
+  _id:                  VrtId,
+  creationDate:         LocalDate,
+  vrn:                  Vrn,
+  repaymentDetailsData: RepaymentDetailData
+)
 
 object VrtRepaymentDetailDataMongo {
   implicit val localDateFormat: Format[LocalDate] = MongoJavatimeFormats.localDateFormat
 
   implicit val format: OFormat[VrtRepaymentDetailDataMongo] = Json.format[VrtRepaymentDetailDataMongo]
 
-  def apply(vrt: VrtRepaymentDetailData, vrtId: VrtId): VrtRepaymentDetailDataMongo = {
+  def apply(vrt: VrtRepaymentDetailData, vrtId: VrtId): VrtRepaymentDetailDataMongo =
     VrtRepaymentDetailDataMongo(
-      _id                  = vrtId,
-      creationDate         = vrt.creationDate,
-      vrn                  = vrt.vrn,
+      _id = vrtId,
+      creationDate = vrt.creationDate,
+      vrn = vrt.vrn,
       repaymentDetailsData = vrt.repaymentDetailsData
     )
-  }
 }

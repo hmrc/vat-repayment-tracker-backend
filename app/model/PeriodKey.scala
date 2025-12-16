@@ -24,7 +24,7 @@ final case class PeriodKey(value: String)
 
 object PeriodKey {
 
-  implicit val format: Format[PeriodKey] = Json.valueFormat
+  implicit val format: Format[PeriodKey]          = Json.valueFormat
   implicit val vrnBinder: PathBindable[PeriodKey] = valueClassBinder(_.value)
 
 }

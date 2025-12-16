@@ -21,20 +21,17 @@ import play.api.libs.json.{Json, OFormat}
 
 import java.time.LocalDate
 
-/***
- * VrtRepaymentDetailData is the model to be used to
- * POST from frontend to backend and to GET from backend
- */
+/** * VrtRepaymentDetailData is the model to be used to POST from frontend to backend and to GET from backend
+  */
 final case class VrtRepaymentDetailData(creationDate: LocalDate, vrn: Vrn, repaymentDetailsData: RepaymentDetailData)
 
 object VrtRepaymentDetailData {
   implicit val format: OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
 
-  def apply(mongo: VrtRepaymentDetailDataMongo): VrtRepaymentDetailData = {
+  def apply(mongo: VrtRepaymentDetailDataMongo): VrtRepaymentDetailData =
     VrtRepaymentDetailData(
-      creationDate         = mongo.creationDate,
-      vrn                  = mongo.vrn,
+      creationDate = mongo.creationDate,
+      vrn = mongo.vrn,
       repaymentDetailsData = mongo.repaymentDetailsData
     )
-  }
 }

@@ -23,7 +23,9 @@ import play.api.mvc._
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class Actions @Inject() (authorisedAction: AuthorisedAction, unhappyPathResponses: UnhappyPathResponses)(implicit ec: ExecutionContext) {
+class Actions @Inject() (authorisedAction: AuthorisedAction, unhappyPathResponses: UnhappyPathResponses)(implicit
+  ec: ExecutionContext
+) {
 
   def authorised(vrn: Vrn): ActionBuilder[AuthorisedRequest, AnyContent] = authorisedAction andThen validateVrn(vrn)
 
@@ -44,7 +46,9 @@ class Actions @Inject() (authorisedAction: AuthorisedAction, unhappyPathResponse
       if (enrolmentList.exists(_.vrn == vrn)) {
         Future.successful(Right(request))
       } else {
-        Logger("application").debug(s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${enrolmentList.head.vrn.value}""")
+        Logger("application").debug(
+          s"""User logged in and passed vrn: ${vrn.value}, has enrolment for ${enrolmentList.head.vrn.value}"""
+        )
         Future.successful(Left(unhappyPathResponses.unauthorised(vrn)))
       }
     } else {
