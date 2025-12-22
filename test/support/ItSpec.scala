@@ -29,32 +29,33 @@ import play.api.inject.guice.{GuiceApplicationBuilder, GuiceableModule}
 
 import scala.concurrent.ExecutionContext
 
-/**
- * This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
- */
+/** This is common spec for every test case which brings all of useful routines we want to use in our scenarios.
+  */
 
 trait ItSpec
-  extends AnyFreeSpecLike
-  with ScalaFutures
-  with BeforeAndAfterEach
-  with GuiceOneServerPerTest
-  with WireMockSupport
-  with Matchers {
+    extends AnyFreeSpecLike
+    with ScalaFutures
+    with BeforeAndAfterEach
+    with GuiceOneServerPerTest
+    with WireMockSupport
+    with Matchers {
   implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   lazy val injector: Injector = fakeApplication().injector
 
-  override implicit val patienceConfig: PatienceConfig = PatienceConfig(
-    timeout  = scaled(Span(3, Seconds)),
-    interval = scaled(Span(300, Millis)))
+  override implicit val patienceConfig: PatienceConfig =
+    PatienceConfig(timeout = scaled(Span(3, Seconds)), interval = scaled(Span(300, Millis)))
 
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
     .overrides(GuiceableModule.fromGuiceModules(Seq(new AbstractModule {
       override def configure(): Unit = ()
     })))
-    .configure(Map[String, Any](
-      "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
-      "mongodb.uri " -> "mongodb://localhost:27017/vat-repayment-tracker-backend-it",
-      "microservice.services.auth.port" -> WireMockSupport.port
-    )).build()
+    .configure(
+      Map[String, Any](
+        "play.http.router"                -> "testOnlyDoNotUseInAppConf.Routes",
+        "mongodb.uri "                    -> "mongodb://localhost:27017/vat-repayment-tracker-backend-it",
+        "microservice.services.auth.port" -> WireMockSupport.port
+      )
+    )
+    .build()
 }

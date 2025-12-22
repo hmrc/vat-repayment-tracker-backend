@@ -25,8 +25,9 @@ import uk.gov.hmrc.play.http.HeaderCarrierConverter
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class AuthorisedAction @Inject() (af: AuthorisedFunctions, cc: MessagesControllerComponents)
-  (implicit ec: ExecutionContext) extends ActionBuilder[AuthorisedRequest, AnyContent] {
+class AuthorisedAction @Inject() (af: AuthorisedFunctions, cc: MessagesControllerComponents)(implicit
+  ec: ExecutionContext
+) extends ActionBuilder[AuthorisedRequest, AnyContent] {
 
   override def invokeBlock[A](request: Request[A], block: AuthorisedRequest[A] => Future[Result]): Future[Result] = {
     implicit val hc: HeaderCarrier = HeaderCarrierConverter.fromRequest(request)

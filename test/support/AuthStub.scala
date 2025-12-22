@@ -24,29 +24,38 @@ import support.WireMockSupport.wireMockBaseUrlAsString
 
 object AuthStub {
   val expectedDetail = "SessionRecordNotFound"
-  val oid: String = "556737e15500005500eaf68f"
+  val oid: String    = "556737e15500005500eaf68f"
 
   val headers: HttpHeaders = new HttpHeaders(
     new HttpHeader("WWW-Authenticate", s"""MDTP detail="$expectedDetail"""")
   )
 
   def authLoginStubOk(): StubMapping =
-    stubFor(get(urlMatching("/auth-login-stub/gg-sign-in/*"))
-      .willReturn(aResponse()
-        .withStatus(200)))
+    stubFor(
+      get(urlMatching("/auth-login-stub/gg-sign-in/*"))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+        )
+    )
 
   def givenTheUserIsNotAuthenticated(): StubMapping =
-    stubFor(post(urlEqualTo("/auth/authorise"))
-      .willReturn(aResponse()
-        .withStatus(401)
-        .withHeaders(headers)))
+    stubFor(
+      post(urlEqualTo("/auth/authorise"))
+        .willReturn(
+          aResponse()
+            .withStatus(401)
+            .withHeaders(headers)
+        )
+    )
 
   def givenTheUserIsAuthenticatedButNotAuthorised(): StubMapping =
-    stubFor(post(urlEqualTo("/auth/authorise"))
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withBody(
-          s"""
+    stubFor(
+      post(urlEqualTo("/auth/authorise"))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(s"""
              {
                "new-session":"/auth/oid/$oid/session",
                "enrolments":"/auth/oid/$oid/enrolments",
@@ -68,14 +77,21 @@ object AuthStub {
                "affinityGroup": "Individual",
                "allEnrolments": []
              }
-       """.stripMargin)))
+       """.stripMargin)
+        )
+    )
 
-  def givenTheUserIsAuthenticatedAndAuthorised(affinityGroup: String = "Individual", vrn: Vrn, enrolment: String): StubMapping =
-    stubFor(post(urlEqualTo("/auth/authorise"))
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withBody(
-          s"""
+  def givenTheUserIsAuthenticatedAndAuthorised(
+    affinityGroup: String = "Individual",
+    vrn:           Vrn,
+    enrolment:     String
+  ): StubMapping =
+    stubFor(
+      post(urlEqualTo("/auth/authorise"))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(s"""
              {
                "new-session":"/auth/oid/$oid/session",
                "enrolments":"/auth/oid/$oid/enrolments",
@@ -108,13 +124,18 @@ object AuthStub {
                         }
                       ]
              }
-       """.stripMargin)))
+       """.stripMargin)
+        )
+    )
 
-  def givenTheUserIsAuthenticatedAndAuthorisedWithSeveralEnrolments
-    (affinityGroup: String = "Individual", vrnList: List[(Vrn, String)]): StubMapping = {
+  def givenTheUserIsAuthenticatedAndAuthorisedWithSeveralEnrolments(
+    affinityGroup: String = "Individual",
+    vrnList:       List[(Vrn, String)]
+  ): StubMapping = {
 
-    val mappedList = vrnList.map {
-      case (vrn, key) => s"""{
+    val mappedList = vrnList
+      .map { case (vrn, key) =>
+        s"""{
                             |"key": "$key",
                             |"identifiers": [
                             | {
@@ -124,13 +145,15 @@ object AuthStub {
                             |],
                             |"state": "Activated"
                             |}""".stripMargin
-    }.mkString(",")
+      }
+      .mkString(",")
 
-    stubFor(post(urlEqualTo("/auth/authorise"))
-      .willReturn(aResponse()
-        .withStatus(200)
-        .withBody(
-          s"""
+    stubFor(
+      post(urlEqualTo("/auth/authorise"))
+        .willReturn(
+          aResponse()
+            .withStatus(200)
+            .withBody(s"""
              {
                "new-session":"/auth/oid/$oid/session",
                "enrolments":"/auth/oid/$oid/enrolments",
@@ -154,6 +177,8 @@ object AuthStub {
                $mappedList
                ]
              }
-       """.stripMargin)))
+       """.stripMargin)
+        )
+    )
   }
 }

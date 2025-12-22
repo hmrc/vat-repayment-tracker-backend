@@ -21,17 +21,16 @@ import java.time.LocalDate
 import play.api.libs.json.{Json, OFormat}
 
 final case class RepaymentDetailData(
-    returnCreationDate:     LocalDate,
-    sentForRiskingDate:     Option[LocalDate],
-    lastUpdateReceivedDate: Option[LocalDate],
-    periodKey:              String,
-    riskingStatus:          RiskingStatus,
-    vatToPay_BOX5:          BigDecimal,
-    supplementDelayDays:    Option[Int],
-    originalPostingAmount:  BigDecimal
+  returnCreationDate:     LocalDate,
+  sentForRiskingDate:     Option[LocalDate],
+  lastUpdateReceivedDate: Option[LocalDate],
+  periodKey:              String,
+  riskingStatus:          RiskingStatus,
+  vatToPay_BOX5:          BigDecimal,
+  supplementDelayDays:    Option[Int],
+  originalPostingAmount:  BigDecimal
 )
 
 object RepaymentDetailData {
   implicit val format: OFormat[RepaymentDetailData] = Json.format[RepaymentDetailData]
 }
-

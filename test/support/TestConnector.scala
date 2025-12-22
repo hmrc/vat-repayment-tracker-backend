@@ -31,14 +31,17 @@ import scala.concurrent.Future
 class TestConnector @Inject() (app: Application) {
 
   def store(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] = {
-    val req = FakeRequest(POST, "/vat-repayment-tracker-backend/store").withJsonBody(Json.toJson(vrtRepaymentDetailData))
+    val req = FakeRequest(POST, "/vat-repayment-tracker-backend/store")
+      .withJsonBody(Json.toJson(vrtRepaymentDetailData))
       .withHeaders(HeaderNames.authorisation -> "authToken")
 
     route(app, req).getOrElse(Future.failed(new Exception))
   }
 
   def storeTestOnly(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] = {
-    val req = FakeRequest(POST, "/vat-repayment-tracker-backend/test-only/store").withJsonBody(Json.toJson(vrtRepaymentDetailData))
+    val req = FakeRequest(POST, "/vat-repayment-tracker-backend/test-only/store").withJsonBody(
+      Json.toJson(vrtRepaymentDetailData)
+    )
 
     route(app, req).getOrElse(Future.failed(new Exception))
   }

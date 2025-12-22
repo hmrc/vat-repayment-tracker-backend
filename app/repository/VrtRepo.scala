@@ -30,24 +30,32 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
-  extends Repo[VrtId, VrtRepaymentDetailDataMongo](
-    collectionName = "repayment-details",
-    mongoComponent = mongoComponent,
-    indexes        = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
-    replaceIndexes = true) {
+    extends Repo[VrtId, VrtRepaymentDetailDataMongo](
+      collectionName = "repayment-details",
+      mongoComponent = mongoComponent,
+      indexes = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
+      replaceIndexes = true
+    ) {
 
   def findByVrnAndPeriodKey(vrn: Vrn, periodKey: PeriodKey): Future[Seq[VrtRepaymentDetailDataMongo]] =
-    collection.find(and(equal("vrn", vrn.value), equal("repaymentDetailsData.periodKey", periodKey.value)))
+    collection
+      .find(and(equal("vrn", vrn.value), equal("repaymentDetailsData.periodKey", periodKey.value)))
       .toFuture()
 
-  def findByVrnAndPeriodKeyAndRiskingStatus(vrn: Vrn, periodKey: PeriodKey, riskingStatus: RiskingStatus): Future[Seq[VrtRepaymentDetailDataMongo]] =
-    collection.find(
-      and(
-        equal("vrn", vrn.value),
-        equal("repaymentDetailsData.periodKey", periodKey.value),
-        equal("repaymentDetailsData.riskingStatus", riskingStatus.toString),
+  def findByVrnAndPeriodKeyAndRiskingStatus(
+    vrn:           Vrn,
+    periodKey:     PeriodKey,
+    riskingStatus: RiskingStatus
+  ): Future[Seq[VrtRepaymentDetailDataMongo]] =
+    collection
+      .find(
+        and(
+          equal("vrn", vrn.value),
+          equal("repaymentDetailsData.periodKey", periodKey.value),
+          equal("repaymentDetailsData.riskingStatus", riskingStatus.toString)
+        )
       )
-    ).toFuture()
+      .toFuture()
 
 }
 
@@ -58,12 +66,13 @@ object VrtRepo {
     IndexModel(keys = Indexes.ascending("repaymentDetailsData.periodKey")),
     IndexModel(keys = Indexes.ascending("repaymentDetailsData.riskingStatus")),
     IndexModel(
-      keys         = Indexes.ascending("creationDate"),
+      keys = Indexes.ascending("creationDate"),
       indexOptions = IndexOptions().expireAfter(ttl, TimeUnit.SECONDS)
     )
   )
 
   implicit val vrtId: Id[VrtId] = (i: VrtId) => i.value
 
-  implicit val vrtIdExtractor: IdExtractor[VrtRepaymentDetailDataMongo, VrtId] = (v: VrtRepaymentDetailDataMongo) => v._id
+  implicit val vrtIdExtractor: IdExtractor[VrtRepaymentDetailDataMongo, VrtId] = (v: VrtRepaymentDetailDataMongo) =>
+    v._id
 }

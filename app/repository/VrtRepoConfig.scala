@@ -24,8 +24,6 @@ import scala.concurrent.duration.Duration
 final case class VrtRepoConfig(expireMongoPayments: Duration) {
 
   @Inject
-  def this(servicesConfig: ServicesConfig) = {
+  def this(servicesConfig: ServicesConfig) =
     this(servicesConfig.getDuration("expireMongoVrt"))
-  }
 }
-

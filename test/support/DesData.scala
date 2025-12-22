@@ -28,30 +28,30 @@ import play.api.libs.json.{JsValue, Json}
 object DesData {
 
   val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
-    returnCreationDate     = LocalDate.parse("2001-01-01"),
-    sentForRiskingDate     = Option(LocalDate.parse("2001-01-01")),
+    returnCreationDate = LocalDate.parse("2001-01-01"),
+    sentForRiskingDate = Option(LocalDate.parse("2001-01-01")),
     lastUpdateReceivedDate = Option(LocalDate.parse("2001-01-01")),
-    periodKey              = "18AC",
-    riskingStatus          = INITIAL,
-    vatToPay_BOX5          = 1000,
-    supplementDelayDays    = Option(1),
-    originalPostingAmount  = 100.02
+    periodKey = "18AC",
+    riskingStatus = INITIAL,
+    vatToPay_BOX5 = 1000,
+    supplementDelayDays = Option(1),
+    originalPostingAmount = 100.02
   )
 
   val repaymentDetail2: RepaymentDetailData = RepaymentDetailData(
-    returnCreationDate     = LocalDate.parse("2001-01-01"),
-    sentForRiskingDate     = Option(LocalDate.parse("2001-01-01")),
+    returnCreationDate = LocalDate.parse("2001-01-01"),
+    sentForRiskingDate = Option(LocalDate.parse("2001-01-01")),
     lastUpdateReceivedDate = Option(LocalDate.parse("2001-01-01")),
-    periodKey              = "18AC",
-    riskingStatus          = REPAYMENT_APPROVED,
-    vatToPay_BOX5          = 1000,
-    supplementDelayDays    = Option(1),
-    originalPostingAmount  = 100.02
+    periodKey = "18AC",
+    riskingStatus = REPAYMENT_APPROVED,
+    vatToPay_BOX5 = 1000,
+    supplementDelayDays = Option(1),
+    originalPostingAmount = 100.02
   )
 
   val repaymentsDetail: Seq[RepaymentDetailData] = Seq(repaymentDetail)
 
-  //language=JSON
+  // language=JSON
   val repaymentDetailJson: JsValue = Json.parse(
     s"""[
           {
@@ -67,11 +67,11 @@ object DesData {
     ]""".stripMargin
   )
 
-  private val vrn: Vrn = Vrn("2345678891")
-  private val id: VrtId = VrtId(ObjectId.get.toString)
+  private val vrn: Vrn                                    = Vrn("2345678891")
+  private val id: VrtId                                   = VrtId(ObjectId.get.toString)
   val vrtRepaymentDetailData: VrtRepaymentDetailDataMongo = VrtRepaymentDetailDataMongo(id, now(), vrn, repaymentDetail)
 
-  //language=JSON
+  // language=JSON
   val vrtRepaymentDetailDataJson: JsValue = Json.parse(
     s"""{
           "_id" : "${id.value}",
@@ -90,4 +90,3 @@ object DesData {
     }""".stripMargin
   )
 }
-

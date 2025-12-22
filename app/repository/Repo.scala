@@ -27,33 +27,28 @@ import scala.concurrent.{ExecutionContext, Future}
 import scala.reflect.ClassTag
 
 abstract class Repo[ID, A: ClassTag](
-    collectionName: String,
-    mongoComponent: MongoComponent,
-    indexes:        Seq[IndexModel],
-    extraCodecs:    Seq[Codec[_]]   = Seq.empty,
-    replaceIndexes: Boolean         = false
-)(implicit domainFormat: OFormat[A],
-  executionContext: ExecutionContext,
-  id:               Id[ID],
-  idExtractor:      IdExtractor[A, ID]
-)
-  extends PlayMongoRepository[A](
-    mongoComponent = mongoComponent,
-    collectionName = collectionName,
-    domainFormat   = domainFormat,
-    extraCodecs    = extraCodecs,
-    indexes        = indexes,
-    replaceIndexes = replaceIndexes
-  ) {
+  collectionName: String,
+  mongoComponent: MongoComponent,
+  indexes:        Seq[IndexModel],
+  extraCodecs:    Seq[Codec[_]] = Seq.empty,
+  replaceIndexes: Boolean = false
+)(implicit domainFormat: OFormat[A], executionContext: ExecutionContext, id: Id[ID], idExtractor: IdExtractor[A, ID])
+    extends PlayMongoRepository[A](
+      mongoComponent = mongoComponent,
+      collectionName = collectionName,
+      domainFormat = domainFormat,
+      extraCodecs = extraCodecs,
+      indexes = indexes,
+      replaceIndexes = replaceIndexes
+    ) {
 
-  /**
-   * Update or Insert (upsert) element `a` identified by `id`
-   */
+  /** Update or Insert (upsert) element `a` identified by `id`
+    */
   def upsert(a: A): Future[Unit] = collection
     .replaceOne(
-      filter      = Filters.eq("_id", id.value(idExtractor.id(a))),
+      filter = Filters.eq("_id", id.value(idExtractor.id(a))),
       replacement = a,
-      options     = ReplaceOptions().upsert(true)
+      options = ReplaceOptions().upsert(true)
     )
     .toFuture()
     .map(_ => ())
