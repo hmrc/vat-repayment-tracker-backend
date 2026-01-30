@@ -9,7 +9,7 @@ lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
   .disablePlugins(JUnitXmlReportPlugin)
   .settings(
-    scalaVersion                     := "2.13.18",
+    scalaVersion                     := "3.5.2",
     libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test,
     retrieveManaged                  :=  true,
     routesGenerator                  :=  InjectedRoutesGenerator
@@ -34,26 +34,7 @@ lazy val microservice = Project(appName, file("."))
        "model.PeriodKey"
     ))
   .settings(
-    scalacOptions ++= Seq(
-      "-Xfatal-warnings",
-      "-Xlint:-missing-interpolator,_",
-      "-Xlint:adapted-args",
-      "-Ywarn-unused:implicits",
-      "-Ywarn-unused:imports",
-      "-Ywarn-unused:locals",
-      "-Ywarn-unused:params",
-      "-Ywarn-unused:patvars",
-      "-Ywarn-unused:privates",
-      "-Ywarn-value-discard",
-      "-Ywarn-dead-code",
-      "-deprecation",
-      "-feature",
-      "-unchecked",
-      "-language:implicitConversions",
-      // required in place of silencer plugin
-      "-Wconf:cat=unused-imports&src=html/.*:s",
-      "-Wconf:src=routes/.*:s"
-    )
+    scalacOptions ++= ScalaCompilerFlags.scalaCompilerOptions
   )
   .settings(Compile / scalacOptions -= "utf8")
   .settings(

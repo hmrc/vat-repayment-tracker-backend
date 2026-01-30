@@ -22,10 +22,10 @@ import play.api.mvc.PathBindable
 
 /** Vat Registration Number (Vrn)
   */
-final case class Vrn(value: String)
+final case class Vrn(value: String) extends AnyVal derives CanEqual
 
 object Vrn {
-  implicit val format: Format[Vrn]          = Json.valueFormat
+  given Format[Vrn]                         = Json.valueFormat[Vrn]
   implicit val vrnBinder: PathBindable[Vrn] = valueClassBinder(_.value)
   val validVrnKeys: List[String]            = List("VRN", "VATRegNo")
 

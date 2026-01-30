@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,11 @@
  * limitations under the License.
  */
 
-package model
+package support
 
-import play.api.libs.json.Json.toJson
-import support.DesData.{vrtRepaymentDetailData, vrtRepaymentDetailDataJson}
-import support.UnitSpec
-import support.Given.given
+import play.api.libs.json.JsValue
 
-class VrtRepaymentDetailDataSpec extends UnitSpec {
+import scala.CanEqual.derived
 
-  "to json" in {
-    toJson(vrtRepaymentDetailData) shouldBe vrtRepaymentDetailDataJson
-  }
-
-  "from json" in {
-    vrtRepaymentDetailDataJson.as[VrtRepaymentDetailDataMongo] shouldBe vrtRepaymentDetailData
-  }
-}
+object Given:
+  given CanEqual[JsValue, JsValue] = derived

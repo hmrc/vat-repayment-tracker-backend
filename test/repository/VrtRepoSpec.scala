@@ -22,6 +22,7 @@ import model.des.RiskingStatus.REPAYMENT_APPROVED
 import org.bson.types.ObjectId
 import support.DesData.{repaymentDetail, repaymentDetail2}
 import support.ItSpec
+import org.mongodb.scala.{ObservableFuture, SingleObservableFuture}
 
 class VrtRepoSpec extends ItSpec {
   private lazy val repo = injector.instanceOf[VrtRepo]
@@ -32,10 +33,8 @@ class VrtRepoSpec extends ItSpec {
   private val id        = VrtId(ObjectId.get.toString)
   private val id2       = VrtId(ObjectId.get.toString)
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     repo.collection.drop().toFuture().futureValue
-    ()
-  }
 
   "count should be 0 with empty repo" in {
     collectionSize shouldBe 0

@@ -29,7 +29,7 @@ final case class VrtRepaymentDetailDataMongo(
   creationDate:         LocalDate,
   vrn:                  Vrn,
   repaymentDetailsData: RepaymentDetailData
-)
+) derives CanEqual
 
 object VrtRepaymentDetailDataMongo {
   implicit val localDateFormat: Format[LocalDate] = MongoJavatimeFormats.localDateFormat

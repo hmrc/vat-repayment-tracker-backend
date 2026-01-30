@@ -21,7 +21,7 @@ import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailDataMongo}
 import org.mongodb.scala.model.Filters._
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import repository.Repo.{Id, IdExtractor}
-import repository.VrtRepo._
+import repository.VrtRepoUtils.given
 import uk.gov.hmrc.mongo.MongoComponent
 
 import java.util.concurrent.TimeUnit
@@ -33,7 +33,7 @@ final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoCo
     extends Repo[VrtId, VrtRepaymentDetailDataMongo](
       collectionName = "repayment-details",
       mongoComponent = mongoComponent,
-      indexes = VrtRepo.indexes(config.expireMongoPayments.toSeconds),
+      indexes = VrtRepoUtils.indexes(config.expireMongoPayments.toSeconds),
       replaceIndexes = true
     ) {
 
@@ -59,7 +59,7 @@ final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoCo
 
 }
 
-object VrtRepo {
+object VrtRepoUtils {
 
   def indexes(ttl: Long): Seq[IndexModel] = Seq(
     IndexModel(keys = Indexes.ascending("vrn")),
@@ -71,8 +71,7 @@ object VrtRepo {
     )
   )
 
-  implicit val vrtId: Id[VrtId] = (i: VrtId) => i.value
+  given Id[VrtId] = (i: VrtId) => i.value
 
-  implicit val vrtIdExtractor: IdExtractor[VrtRepaymentDetailDataMongo, VrtId] = (v: VrtRepaymentDetailDataMongo) =>
-    v._id
+  given IdExtractor[VrtRepaymentDetailDataMongo, VrtId] = (v: VrtRepaymentDetailDataMongo) => v._id
 }

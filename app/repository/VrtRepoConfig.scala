@@ -16,7 +16,7 @@
 
 package repository
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.duration.Duration

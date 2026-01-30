@@ -18,13 +18,13 @@ package model
 
 import controllers.ValueClassBinder.valueClassBinder
 import org.bson.types.ObjectId
-import play.api.libs.json._
+import play.api.libs.json.{Format, Json}
 import play.api.mvc.PathBindable
 
-final case class VrtId(value: String)
+final case class VrtId(value: String) extends AnyVal
 
 object VrtId {
-  implicit val format: Format[VrtId]                = Json.valueFormat
+  given Format[VrtId]                               = Json.valueFormat[VrtId]
   implicit val journeyIdBinder: PathBindable[VrtId] = valueClassBinder(_.value)
   def generate: VrtId                               = VrtId(ObjectId.get().toString)
 }

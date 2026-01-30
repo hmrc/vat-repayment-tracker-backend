@@ -19,7 +19,7 @@ package controllers
 import play.api.libs.json._
 import play.api.mvc.{PathBindable, QueryStringBindable}
 
-import scala.reflect.runtime.universe.{TypeTag, typeOf}
+import izumi.reflect.Tag
 
 object ValueClassBinder {
 
@@ -42,12 +42,12 @@ object ValueClassBinder {
     }
   }
 
-  def bindableA[A: TypeTag: Reads](fromAtoString: A => String): QueryStringBindable[A] =
+  def bindableA[A: Tag: Reads](fromAtoString: A => String): QueryStringBindable[A] =
     new QueryStringBindable.Parsing[A](
       parse = JsString(_).as[A],
       fromAtoString,
       { case (key: String, _: Exception) =>
-        s"Cannot parse param $key as ${typeOf[A].typeSymbol.name.toString}"
+        s"Cannot parse param $key as ${summon[Tag[A]].tag.toString}"
       }
     )
 }

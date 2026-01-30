@@ -18,23 +18,27 @@ package controller
 
 import controllers.VrtController
 import model.EnrolmentKeys.{mtdVatEnrolmentKey, vatDecEnrolmentKey, vatVarEnrolmentKey}
-import model._
+import model.*
 import model.des.RiskingStatus.SENT_FOR_RISKING
 import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repository.VrtRepo
-import support.AuthStub._
+import support.AuthStub.*
 import support.DesData.repaymentDetail
-import support._
+import support.*
 import uk.gov.hmrc.auth.core.SessionRecordNotFound
 import uk.gov.hmrc.http.HeaderCarrier
+import org.mongodb.scala.SingleObservableFuture
 
+import java.time.LocalDate
 import java.time.LocalDate.now
+import scala.CanEqual.derived
 
 class VrtControllerSpec extends ItSpec with Status {
-  implicit val emptyHC: HeaderCarrier = HeaderCarrier()
+  given HeaderCarrier                  = HeaderCarrier()
+  given CanEqual[LocalDate, LocalDate] = derived
 
   private val vrn       = Vrn("2345678890")
   private val vrn2      = Vrn("2345678891")

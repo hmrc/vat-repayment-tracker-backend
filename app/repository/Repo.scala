@@ -17,8 +17,9 @@
 package repository
 
 import org.bson.codecs.Codec
-import org.mongodb.scala.model.{Filters, IndexModel, ReplaceOptions}
-import play.api.libs.json._
+import org.mongodb.scala.model.Filters.equal
+import org.mongodb.scala.model.{IndexModel, ReplaceOptions}
+import play.api.libs.json.*
 import repository.Repo.{Id, IdExtractor}
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.PlayMongoRepository
@@ -30,7 +31,7 @@ abstract class Repo[ID, A: ClassTag](
   collectionName: String,
   mongoComponent: MongoComponent,
   indexes:        Seq[IndexModel],
-  extraCodecs:    Seq[Codec[_]] = Seq.empty,
+  extraCodecs:    Seq[Codec[?]] = Seq.empty,
   replaceIndexes: Boolean = false
 )(implicit domainFormat: OFormat[A], executionContext: ExecutionContext, id: Id[ID], idExtractor: IdExtractor[A, ID])
     extends PlayMongoRepository[A](
@@ -46,7 +47,7 @@ abstract class Repo[ID, A: ClassTag](
     */
   def upsert(a: A): Future[Unit] = collection
     .replaceOne(
-      filter = Filters.eq("_id", id.value(idExtractor.id(a))),
+      filter = equal("_id", id.value(idExtractor.id(a))),
       replacement = a,
       options = ReplaceOptions().upsert(true)
     )
