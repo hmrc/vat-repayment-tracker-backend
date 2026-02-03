@@ -28,29 +28,23 @@ import uk.gov.hmrc.http.HeaderNames
 import scala.concurrent.Future
 
 @Singleton
-class TestConnector @Inject() (app: Application) {
+class TestConnector @Inject() (app: Application):
 
-  def store(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] = {
+  def store(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] =
     val req = FakeRequest(POST, "/vat-repayment-tracker-backend/store")
       .withJsonBody(Json.toJson(vrtRepaymentDetailData))
       .withHeaders(HeaderNames.authorisation -> "authToken")
 
     route(app, req).getOrElse(Future.failed(new Exception))
-  }
 
-  def storeTestOnly(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] = {
+  def storeTestOnly(vrtRepaymentDetailData: VrtRepaymentDetailData): Future[Result] =
     val req = FakeRequest(POST, "/vat-repayment-tracker-backend/test-only/store").withJsonBody(
       Json.toJson(vrtRepaymentDetailData)
     )
-
     route(app, req).getOrElse(Future.failed(new Exception))
-  }
 
-  def find(vrn: Vrn, periodKey: PeriodKey): Future[Result] = {
+  def find(vrn: Vrn, periodKey: PeriodKey): Future[Result] =
     val req = FakeRequest(GET, s"/vat-repayment-tracker-backend/find/vrn/${vrn.value}/${periodKey.value}")
       .withHeaders(HeaderNames.authorisation -> "authToken")
 
     route(app, req).getOrElse(Future.failed(new Exception))
-  }
-
-}

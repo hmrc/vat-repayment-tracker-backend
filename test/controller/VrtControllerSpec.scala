@@ -36,7 +36,7 @@ import java.time.LocalDate
 import java.time.LocalDate.now
 import scala.CanEqual.derived
 
-class VrtControllerSpec extends ItSpec with Status {
+class VrtControllerSpec extends ItSpec with Status:
   given HeaderCarrier                  = HeaderCarrier()
   given CanEqual[LocalDate, LocalDate] = derived
 
@@ -52,10 +52,9 @@ class VrtControllerSpec extends ItSpec with Status {
   private lazy val repo          = injector.instanceOf[VrtRepo]
   private lazy val controller    = injector.instanceOf[VrtController]
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     repo.collection.drop().toFuture().futureValue
     ()
-  }
 
   def fakeRequest(method: String = "", url: String = ""): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(method, url).withHeaders(
@@ -70,14 +69,13 @@ class VrtControllerSpec extends ItSpec with Status {
   }
 
   "store data for class VRN's" in {
-    List(vatDecEnrolmentKey, vatVarEnrolmentKey).foreach { enrolmentKey =>
+    List(vatDecEnrolmentKey, vatVarEnrolmentKey).foreach: enrolmentKey =>
       withClue(s"For enrolment key '$enrolmentKey': ") {
         givenTheUserIsAuthenticatedAndAuthorised(vrn = vrn, enrolment = enrolmentKey)
         val result = testConnector.store(vrtData)
         status(result) shouldBe OK
         contentAsString(result) shouldBe "updated 1 record"
       }
-    }
   }
 
   "store data testOnly" in {
@@ -166,4 +164,3 @@ class VrtControllerSpec extends ItSpec with Status {
     val response = controller.findRepaymentData(vrn, periodKey)(fakeRequest())
     status(response) shouldBe 200
   }
-}

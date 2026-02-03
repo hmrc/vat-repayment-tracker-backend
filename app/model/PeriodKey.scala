@@ -22,9 +22,6 @@ import play.api.mvc.PathBindable
 
 final case class PeriodKey(value: String) extends AnyVal
 
-object PeriodKey {
-
-  given Format[PeriodKey]                         = Json.valueFormat[PeriodKey]
-  implicit val vrnBinder: PathBindable[PeriodKey] = valueClassBinder(_.value)
-
-}
+object PeriodKey:
+  given Format[PeriodKey]       = Json.valueFormat[PeriodKey]
+  given PathBindable[PeriodKey] = valueClassBinder(_.value)

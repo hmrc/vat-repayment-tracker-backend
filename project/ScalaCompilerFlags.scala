@@ -1,7 +1,5 @@
 object ScalaCompilerFlags {
   val scalaCompilerOptions: Seq[String] = Seq(
-    "-explain",
-    "-explain-cyclic",
     "-Xfatal-warnings",
     "-Wunused:implicits",
     "-Wunused:imports",

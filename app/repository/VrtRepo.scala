@@ -18,7 +18,7 @@ package repository
 
 import model.des.RiskingStatus
 import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailDataMongo}
-import org.mongodb.scala.model.Filters._
+import org.mongodb.scala.model.Filters.*
 import org.mongodb.scala.model.{IndexModel, IndexOptions, Indexes}
 import repository.Repo.{Id, IdExtractor}
 import repository.VrtRepoUtils.given
@@ -29,13 +29,13 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoConfig)(implicit ec: ExecutionContext)
+final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoConfig)(using ExecutionContext)
     extends Repo[VrtId, VrtRepaymentDetailDataMongo](
       collectionName = "repayment-details",
       mongoComponent = mongoComponent,
       indexes = VrtRepoUtils.indexes(config.expireMongoPayments.toSeconds),
       replaceIndexes = true
-    ) {
+    ):
 
   def findByVrnAndPeriodKey(vrn: Vrn, periodKey: PeriodKey): Future[Seq[VrtRepaymentDetailDataMongo]] =
     collection
@@ -57,9 +57,7 @@ final class VrtRepo @Inject() (mongoComponent: MongoComponent, config: VrtRepoCo
       )
       .toFuture()
 
-}
-
-object VrtRepoUtils {
+object VrtRepoUtils:
 
   def indexes(ttl: Long): Seq[IndexModel] = Seq(
     IndexModel(keys = Indexes.ascending("vrn")),
@@ -71,7 +69,5 @@ object VrtRepoUtils {
     )
   )
 
-  given Id[VrtId] = (i: VrtId) => i.value
-
+  given Id[VrtId]                                       = (i: VrtId) => i.value
   given IdExtractor[VrtRepaymentDetailDataMongo, VrtId] = (v: VrtRepaymentDetailDataMongo) => v._id
-}

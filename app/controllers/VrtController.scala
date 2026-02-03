@@ -16,11 +16,11 @@
 
 package controllers
 
-import controllers.action.Actions
-import model.{PeriodKey, Vrn, VrtId, VrtRepaymentDetailData, VrtRepaymentDetailDataMongo}
+import controllers.action.{Actions, AuthorisedRequest}
+import model.*
 import play.api.Logging
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, ControllerComponents, Request, Result}
+import play.api.mvc.*
 import repository.VrtRepo
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -31,36 +31,35 @@ class VrtController @Inject() (
   cc:      ControllerComponents,
   actions: Actions,
   repo:    VrtRepo
-)(implicit executionContext: ExecutionContext)
+)(using ExecutionContext)
     extends BackendController(cc)
-    with Logging {
+    with Logging:
 
-  def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions.authorised(vrn).async {
+  def findRepaymentData(vrn: Vrn, periodKey: PeriodKey): Action[AnyContent] = actions
+    .authorised(vrn)
+    .async:
     logger.debug(s"************ received vrn ${vrn.value}, periodKey : ${periodKey.value}")
 
-    repo.findByVrnAndPeriodKey(vrn, periodKey).map { data =>
-      val response = data.map(VrtRepaymentDetailData.apply)
-      Ok(Json.toJson(response))
-    }
-  }
+    repo
+      .findByVrnAndPeriodKey(vrn, periodKey)
+      .map: data =>
+        val response = data.map(VrtRepaymentDetailData.apply)
+        Ok(Json.toJson(response))
 
   def storeRepaymentData(): Action[VrtRepaymentDetailData] =
-    actions.authorised.async(parse.json[VrtRepaymentDetailData]) { implicit request =>
+    actions.authorised.async(parse.json[VrtRepaymentDetailData]): request =>
+      given AuthorisedRequest[VrtRepaymentDetailData] = request
       store()
-    }
 
-  def store()(implicit request: Request[VrtRepaymentDetailData]): Future[Result] = {
+  def store()(using request: Request[VrtRepaymentDetailData]): Future[Result] =
     val repaymentData: VrtRepaymentDetailData = request.body
     val periodKey                             = PeriodKey(repaymentData.repaymentDetailsData.periodKey)
     val riskingStatus                         = repaymentData.repaymentDetailsData.riskingStatus
 
     logger.debug(s"received ${repaymentData.toString}")
 
-    for {
+    for
       data <- repo.findByVrnAndPeriodKeyAndRiskingStatus(repaymentData.vrn, periodKey, riskingStatus)
       vrtId = data.headOption.fold(VrtId.generate)(_._id)
       _    <- repo.upsert(VrtRepaymentDetailDataMongo(repaymentData, vrtId))
-    } yield Ok(s"updated 1 record")
-  }
-
-}
+    yield Ok(s"updated 1 record")

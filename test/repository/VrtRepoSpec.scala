@@ -24,7 +24,7 @@ import support.DesData.{repaymentDetail, repaymentDetail2}
 import support.ItSpec
 import org.mongodb.scala.{ObservableFuture, SingleObservableFuture}
 
-class VrtRepoSpec extends ItSpec {
+class VrtRepoSpec extends ItSpec:
   private lazy val repo = injector.instanceOf[VrtRepo]
 
   private val vrn       = Vrn("2345678890")
@@ -68,4 +68,3 @@ class VrtRepoSpec extends ItSpec {
   }
 
   private def collectionSize: Int = repo.collection.find().toFuture().map(_.size).futureValue
-}

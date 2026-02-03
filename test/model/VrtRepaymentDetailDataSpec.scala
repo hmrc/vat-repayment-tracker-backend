@@ -21,7 +21,7 @@ import support.DesData.{vrtRepaymentDetailData, vrtRepaymentDetailDataJson}
 import support.UnitSpec
 import support.Given.given
 
-class VrtRepaymentDetailDataSpec extends UnitSpec {
+class VrtRepaymentDetailDataSpec extends UnitSpec:
 
   "to json" in {
     toJson(vrtRepaymentDetailData) shouldBe vrtRepaymentDetailDataJson
@@ -30,4 +30,3 @@ class VrtRepaymentDetailDataSpec extends UnitSpec {
   "from json" in {
     vrtRepaymentDetailDataJson.as[VrtRepaymentDetailDataMongo] shouldBe vrtRepaymentDetailData
   }
-}

@@ -25,8 +25,8 @@ import java.time.LocalDate
   */
 final case class VrtRepaymentDetailData(creationDate: LocalDate, vrn: Vrn, repaymentDetailsData: RepaymentDetailData)
 
-object VrtRepaymentDetailData {
-  implicit val format: OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
+object VrtRepaymentDetailData:
+  given OFormat[VrtRepaymentDetailData] = Json.format[VrtRepaymentDetailData]
 
   def apply(mongo: VrtRepaymentDetailDataMongo): VrtRepaymentDetailData =
     VrtRepaymentDetailData(
@@ -34,4 +34,3 @@ object VrtRepaymentDetailData {
       vrn = mongo.vrn,
       repaymentDetailsData = mongo.repaymentDetailsData
     )
-}

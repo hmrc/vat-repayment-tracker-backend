@@ -18,10 +18,9 @@ package config
 
 import support.ItSpec
 
-class AppConfigSpec extends ItSpec {
+class AppConfigSpec extends ItSpec:
   private lazy val appConfig = injector.instanceOf[AppConfig]
 
   "app name test " in {
     appConfig.appName shouldBe "vat-repayment-tracker-backend"
   }
-}

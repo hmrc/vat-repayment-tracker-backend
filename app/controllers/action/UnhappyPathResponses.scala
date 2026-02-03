@@ -22,8 +22,7 @@ import play.api.mvc.Result
 import play.api.mvc.Results.Unauthorized
 
 @Singleton
-class UnhappyPathResponses {
+class UnhappyPathResponses:
   val unauthorised: Result = Unauthorized("You do not have access to this service")
 
   def unauthorised(vrn: Vrn): Result = Unauthorized(s"You do not have access to this vrn: ${vrn.value}")
-}

@@ -22,8 +22,7 @@ import model.{TypedVrn, Vrn}
 import play.api.mvc.{Request, WrappedRequest}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier, Enrolments}
 
-final class AuthorisedRequest[A](val request: Request[A], val enrolments: Enrolments)
-    extends WrappedRequest[A](request) {
+final case class AuthorisedRequest[A](request: Request[A], enrolments: Enrolments) extends WrappedRequest[A](request):
 
   val enrolmentsVrn: Set[TypedVrn] =
     enrolments.enrolments.collect {
@@ -33,4 +32,3 @@ final class AuthorisedRequest[A](val request: Request[A], val enrolments: Enrolm
       case Enrolment(key, identifiers, _, _) if Set(vatDecEnrolmentKey, vatVarEnrolmentKey).contains(key) =>
         identifiers.collectFirst { case EnrolmentIdentifier(k, vrn) if Vrn.validVrnKey(k) => ClassicVrn(Vrn(vrn)) }
     }.flatten
-}

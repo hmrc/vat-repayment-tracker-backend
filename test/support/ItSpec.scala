@@ -38,18 +38,23 @@ trait ItSpec
     with BeforeAndAfterEach
     with GuiceOneServerPerTest
     with WireMockSupport
-    with Matchers {
-  implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
+    with Matchers:
+  given ExecutionContext = ExecutionContext.Implicits.global
 
   lazy val injector: Injector = fakeApplication().injector
 
-  override implicit val patienceConfig: PatienceConfig =
+  given PatienceConfig =
     PatienceConfig(timeout = scaled(Span(3, Seconds)), interval = scaled(Span(300, Millis)))
 
   override def fakeApplication(): Application = new GuiceApplicationBuilder()
-    .overrides(GuiceableModule.fromGuiceModules(Seq(new AbstractModule {
-      override def configure(): Unit = ()
-    })))
+    .overrides(
+      GuiceableModule.fromGuiceModules(
+        Seq(
+          new AbstractModule:
+            override def configure(): Unit = ()
+        )
+      )
+    )
     .configure(
       Map[String, Any](
         "play.http.router"                -> "testOnlyDoNotUseInAppConf.Routes",
@@ -58,4 +63,3 @@ trait ItSpec
       )
     )
     .build()
-}

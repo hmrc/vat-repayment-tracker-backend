@@ -33,7 +33,7 @@ abstract class Repo[ID, A: ClassTag](
   indexes:        Seq[IndexModel],
   extraCodecs:    Seq[Codec[?]] = Seq.empty,
   replaceIndexes: Boolean = false
-)(implicit domainFormat: OFormat[A], executionContext: ExecutionContext, id: Id[ID], idExtractor: IdExtractor[A, ID])
+)(using domainFormat: OFormat[A], id: Id[ID], idExtractor: IdExtractor[A, ID])(using ExecutionContext)
     extends PlayMongoRepository[A](
       mongoComponent = mongoComponent,
       collectionName = collectionName,
@@ -41,7 +41,7 @@ abstract class Repo[ID, A: ClassTag](
       extraCodecs = extraCodecs,
       indexes = indexes,
       replaceIndexes = replaceIndexes
-    ) {
+    ):
 
   /** Update or Insert (upsert) element `a` identified by `id`
     */
@@ -54,15 +54,9 @@ abstract class Repo[ID, A: ClassTag](
     .toFuture()
     .map(_ => ())
 
-}
-
-object Repo {
-  trait Id[I] {
+object Repo:
+  trait Id[I]:
     def value(i: I): String
-  }
 
-  trait IdExtractor[A, ID] {
+  trait IdExtractor[A, ID]:
     def id(a: A): ID
-  }
-
-}

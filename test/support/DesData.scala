@@ -21,12 +21,11 @@ import model.des.RiskingStatus.{INITIAL, REPAYMENT_APPROVED}
 import java.time.{LocalDate, ZoneOffset}
 import java.time.LocalDate.now
 import model.{Vrn, VrtId, VrtRepaymentDetailDataMongo}
-import model.des._
+import model.des.*
 import org.bson.types.ObjectId
 import play.api.libs.json.{JsValue, Json}
 
-object DesData {
-
+object DesData:
   val repaymentDetail: RepaymentDetailData = RepaymentDetailData(
     returnCreationDate = LocalDate.parse("2001-01-01"),
     sentForRiskingDate = Option(LocalDate.parse("2001-01-01")),
@@ -89,4 +88,3 @@ object DesData {
       }
     }""".stripMargin
   )
-}
