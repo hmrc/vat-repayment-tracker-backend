@@ -18,8 +18,3 @@ object ScalaCompilerFlags {
     "-Wconf:src=routes/.*:s"
   )
 }
-
-
-
-//"-Ywarn-value-discard",
-//"-deprecation",
