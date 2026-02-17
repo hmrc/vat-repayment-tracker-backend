@@ -29,8 +29,7 @@ final case class RepaymentDetailData(
   vatToPay_BOX5:          BigDecimal,
   supplementDelayDays:    Option[Int],
   originalPostingAmount:  BigDecimal
-)
+) derives CanEqual
 
-object RepaymentDetailData {
-  implicit val format: OFormat[RepaymentDetailData] = Json.format[RepaymentDetailData]
-}
+object RepaymentDetailData:
+  given OFormat[RepaymentDetailData] = Json.format[RepaymentDetailData]

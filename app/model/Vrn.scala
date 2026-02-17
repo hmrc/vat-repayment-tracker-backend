@@ -22,25 +22,15 @@ import play.api.mvc.PathBindable
 
 /** Vat Registration Number (Vrn)
   */
-final case class Vrn(value: String)
+final case class Vrn(value: String) extends AnyVal derives CanEqual
 
-object Vrn {
-  implicit val format: Format[Vrn]          = Json.valueFormat
-  implicit val vrnBinder: PathBindable[Vrn] = valueClassBinder(_.value)
-  val validVrnKeys: List[String]            = List("VRN", "VATRegNo")
+object Vrn:
+  given Format[Vrn]              = Json.valueFormat[Vrn]
+  given PathBindable[Vrn]        = valueClassBinder(_.value)
+  val validVrnKeys: List[String] = List("VRN", "VATRegNo")
 
   def validVrnKey(vrnKey: String): Boolean = validVrnKeys.contains(vrnKey)
 
-}
-
-sealed trait TypedVrn extends Product with Serializable {
-  def vrn: Vrn
-}
-
-object TypedVrn {
-
-  final case class ClassicVrn(vrn: Vrn) extends TypedVrn
-
-  final case class MtdVrn(vrn: Vrn) extends TypedVrn
-
-}
+enum TypedVrn(val vrn: Vrn):
+  case ClassicVrn(override val vrn: Vrn) extends TypedVrn(vrn)
+  case MtdVrn(override val vrn: Vrn)     extends TypedVrn(vrn)

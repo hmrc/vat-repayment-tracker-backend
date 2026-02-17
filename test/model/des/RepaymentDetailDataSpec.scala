@@ -17,10 +17,11 @@
 package model.des
 
 import play.api.libs.json.Json.toJson
+import support.Given.given
 import support.DesData.{repaymentDetailJson, repaymentsDetail}
 import support.UnitSpec
 
-class RepaymentDetailDataSpec extends UnitSpec {
+class RepaymentDetailDataSpec extends UnitSpec:
 
   "to json" in {
     toJson(repaymentsDetail) shouldBe repaymentDetailJson
@@ -29,4 +30,3 @@ class RepaymentDetailDataSpec extends UnitSpec {
   "from json" in {
     repaymentDetailJson.as[Seq[RepaymentDetailData]] shouldBe repaymentsDetail
   }
-}

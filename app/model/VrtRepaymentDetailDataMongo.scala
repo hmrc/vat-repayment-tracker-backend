@@ -29,12 +29,11 @@ final case class VrtRepaymentDetailDataMongo(
   creationDate:         LocalDate,
   vrn:                  Vrn,
   repaymentDetailsData: RepaymentDetailData
-)
+) derives CanEqual
 
-object VrtRepaymentDetailDataMongo {
-  implicit val localDateFormat: Format[LocalDate] = MongoJavatimeFormats.localDateFormat
-
-  implicit val format: OFormat[VrtRepaymentDetailDataMongo] = Json.format[VrtRepaymentDetailDataMongo]
+object VrtRepaymentDetailDataMongo:
+  given Format[LocalDate]                    = MongoJavatimeFormats.localDateFormat
+  given OFormat[VrtRepaymentDetailDataMongo] = Json.format[VrtRepaymentDetailDataMongo]
 
   def apply(vrt: VrtRepaymentDetailData, vrtId: VrtId): VrtRepaymentDetailDataMongo =
     VrtRepaymentDetailDataMongo(
@@ -43,4 +42,3 @@ object VrtRepaymentDetailDataMongo {
       vrn = vrt.vrn,
       repaymentDetailsData = vrt.repaymentDetailsData
     )
-}

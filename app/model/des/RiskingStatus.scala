@@ -20,39 +20,30 @@ import enumeratum.PlayEnum
 
 import scala.collection.immutable
 
-object RiskingStatus extends PlayEnum[RiskingStatus] {
-  case object INITIAL extends RiskingStatus {
-    val inProgress = true
-  } // S001
+object RiskingStatus extends PlayEnum[RiskingStatus]:
+  case object INITIAL extends RiskingStatus:
+    val inProgress = true // S001
 
-  case object SENT_FOR_RISKING extends RiskingStatus {
-    val inProgress = true
-  } // S002
+  case object SENT_FOR_RISKING extends RiskingStatus:
+    val inProgress = true // S002
 
-  case object CLAIM_QUERIED extends RiskingStatus {
-    val inProgress = true
-  } // S003
+  case object CLAIM_QUERIED extends RiskingStatus:
+    val inProgress = true // S003
 
-  case object REPAYMENT_ADJUSTED extends RiskingStatus {
-    val inProgress = false
-  } // S004
+  case object REPAYMENT_ADJUSTED extends RiskingStatus:
+    val inProgress = false // S004
 
   // This is spelt wrong in the DES schema !!!
-  case object ADJUSMENT_TO_TAX_DUE extends RiskingStatus {
-    val inProgress = false
-  } // S005
+  case object ADJUSMENT_TO_TAX_DUE extends RiskingStatus:
+    val inProgress = false // S005
 
-  case object REPAYMENT_APPROVED extends RiskingStatus {
-    val inProgress = false
-  } // S006
+  case object REPAYMENT_APPROVED extends RiskingStatus:
+    val inProgress = false // S006
 
-  case object REPAYMENT_SUSPENDED extends RiskingStatus {
+  case object REPAYMENT_SUSPENDED extends RiskingStatus:
     val inProgress = true
-  }
 
   override def values: immutable.IndexedSeq[RiskingStatus] = findValues
-}
 
-sealed trait RiskingStatus extends enumeratum.EnumEntry with Product with Serializable {
+sealed trait RiskingStatus extends enumeratum.EnumEntry with Product with Serializable:
   def inProgress: Boolean
-}

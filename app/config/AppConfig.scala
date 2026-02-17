@@ -19,10 +19,9 @@ package config
 import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-case class AppConfig(appName: String) {
+case class AppConfig(appName: String):
 
   @Inject
   def this(servicesConfig: ServicesConfig) = this(
     appName = servicesConfig.getString("appName")
   )
-}

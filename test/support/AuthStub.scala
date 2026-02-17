@@ -16,13 +16,13 @@
 
 package support
 
-import com.github.tomakehurst.wiremock.client.WireMock._
+import com.github.tomakehurst.wiremock.client.WireMock.*
 import com.github.tomakehurst.wiremock.http.{HttpHeader, HttpHeaders}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import model.Vrn
 import support.WireMockSupport.wireMockBaseUrlAsString
 
-object AuthStub {
+object AuthStub:
   val expectedDetail = "SessionRecordNotFound"
   val oid: String    = "556737e15500005500eaf68f"
 
@@ -131,7 +131,7 @@ object AuthStub {
   def givenTheUserIsAuthenticatedAndAuthorisedWithSeveralEnrolments(
     affinityGroup: String = "Individual",
     vrnList:       List[(Vrn, String)]
-  ): StubMapping = {
+  ): StubMapping =
 
     val mappedList = vrnList
       .map { case (vrn, key) =>
@@ -180,5 +180,3 @@ object AuthStub {
        """.stripMargin)
         )
     )
-  }
-}

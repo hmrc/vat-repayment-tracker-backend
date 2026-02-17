@@ -18,23 +18,27 @@ package controller
 
 import controllers.VrtController
 import model.EnrolmentKeys.{mtdVatEnrolmentKey, vatDecEnrolmentKey, vatVarEnrolmentKey}
-import model._
+import model.*
 import model.des.RiskingStatus.SENT_FOR_RISKING
 import play.api.http.Status
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
-import play.api.test.Helpers._
+import play.api.test.Helpers.*
 import repository.VrtRepo
-import support.AuthStub._
+import support.AuthStub.*
 import support.DesData.repaymentDetail
-import support._
+import support.*
 import uk.gov.hmrc.auth.core.SessionRecordNotFound
 import uk.gov.hmrc.http.HeaderCarrier
+import org.mongodb.scala.SingleObservableFuture
 
+import java.time.LocalDate
 import java.time.LocalDate.now
+import scala.CanEqual.derived
 
-class VrtControllerSpec extends ItSpec with Status {
-  implicit val emptyHC: HeaderCarrier = HeaderCarrier()
+class VrtControllerSpec extends ItSpec with Status:
+  given HeaderCarrier                  = HeaderCarrier()
+  given CanEqual[LocalDate, LocalDate] = derived
 
   private val vrn       = Vrn("2345678890")
   private val vrn2      = Vrn("2345678891")
@@ -48,10 +52,9 @@ class VrtControllerSpec extends ItSpec with Status {
   private lazy val repo          = injector.instanceOf[VrtRepo]
   private lazy val controller    = injector.instanceOf[VrtController]
 
-  override def beforeEach(): Unit = {
+  override def beforeEach(): Unit =
     repo.collection.drop().toFuture().futureValue
     ()
-  }
 
   def fakeRequest(method: String = "", url: String = ""): FakeRequest[AnyContentAsEmpty.type] =
     FakeRequest(method, url).withHeaders(
@@ -66,14 +69,13 @@ class VrtControllerSpec extends ItSpec with Status {
   }
 
   "store data for class VRN's" in {
-    List(vatDecEnrolmentKey, vatVarEnrolmentKey).foreach { enrolmentKey =>
+    List(vatDecEnrolmentKey, vatVarEnrolmentKey).foreach: enrolmentKey =>
       withClue(s"For enrolment key '$enrolmentKey': ") {
         givenTheUserIsAuthenticatedAndAuthorised(vrn = vrn, enrolment = enrolmentKey)
         val result = testConnector.store(vrtData)
         status(result) shouldBe OK
         contentAsString(result) shouldBe "updated 1 record"
       }
-    }
   }
 
   "store data testOnly" in {
@@ -162,4 +164,3 @@ class VrtControllerSpec extends ItSpec with Status {
     val response = controller.findRepaymentData(vrn, periodKey)(fakeRequest())
     status(response) shouldBe 200
   }
-}

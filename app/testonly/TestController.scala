@@ -34,12 +34,13 @@ package testonly
 
 import controllers.VrtController
 import controllers.action.Actions
-import model._
-import model.des.RiskingStatus._
+import model.*
+import model.des.RiskingStatus.*
 import model.des.{RepaymentDetailData, RiskingStatus}
 import org.bson.types.ObjectId
 import org.mongodb.scala.model.Filters.in
-import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import org.mongodb.scala.SingleObservableFuture
+import play.api.mvc.{Action, AnyContent, ControllerComponents, Request}
 import repository.VrtRepo
 
 import java.time.LocalDate
@@ -54,14 +55,14 @@ class TestController @Inject() (
   actions: Actions,
   repo:    VrtRepo
 )(implicit ec: ExecutionContext)
-    extends VrtController(cc, actions, repo) {
+    extends VrtController(cc, actions, repo):
 
-  private val random: Random.type = scala.util.Random
-  private def date: String        = now().toString
+  private val random: Random = scala.util.Random
+  private def date: String   = now().toString
 
-  val possibleRiskStatus: Seq[RiskingStatus] = Seq(INITIAL, SENT_FOR_RISKING, CLAIM_QUERIED)
+  private val possibleRiskStatus: Seq[RiskingStatus] = Seq(INITIAL, SENT_FOR_RISKING, CLAIM_QUERIED)
 
-  val possiblePeriods = Seq(
+  private val possiblePeriods = Seq(
     PeriodKey("16AA"),
     PeriodKey("16AB"),
     PeriodKey("16AC"),
@@ -100,10 +101,10 @@ class TestController @Inject() (
     PeriodKey("16C4")
   )
 
-  def storeRepaymentDataTestOnly(): Action[VrtRepaymentDetailData] = Action.async(parse.json[VrtRepaymentDetailData]) {
-    implicit request =>
+  def storeRepaymentDataTestOnly(): Action[VrtRepaymentDetailData] =
+    Action.async(parse.json[VrtRepaymentDetailData]): request =>
+      given Request[VrtRepaymentDetailData] = request
       store()
-  }
 
   def removeTestData(): Action[AnyContent] = Action.async {
     repo.collection
@@ -143,4 +144,3 @@ class TestController @Inject() (
         random.nextInt(100)
       )
     )
-}

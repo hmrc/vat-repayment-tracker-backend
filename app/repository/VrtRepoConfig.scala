@@ -16,14 +16,13 @@
 
 package repository
 
-import com.google.inject.Inject
+import javax.inject.Inject
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import scala.concurrent.duration.Duration
 
-final case class VrtRepoConfig(expireMongoPayments: Duration) {
+final case class VrtRepoConfig(expireMongoPayments: Duration):
 
   @Inject
   def this(servicesConfig: ServicesConfig) =
     this(servicesConfig.getDuration("expireMongoVrt"))
-}
