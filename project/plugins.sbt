@@ -2,7 +2,7 @@ resolvers += MavenRepository("HMRC-open-artefacts-maven", "https://open.artefact
 resolvers += Resolver.url("HMRC-open-artefacts-ivy", url("https://open.artefacts.tax.service.gov.uk/ivy2"))(Resolver.ivyStylePatterns)
 
 addSbtPlugin("com.timushev.sbt"  % "sbt-updates"            % "0.6.4")
-addSbtPlugin("org.playframework" % "sbt-plugin"             % "3.0.9")
+addSbtPlugin("org.playframework" % "sbt-plugin"             % "3.0.10")
 addSbtPlugin("org.scalameta"     % "sbt-scalafmt"           % "2.4.0")
 addSbtPlugin("org.scoverage"     % "sbt-scoverage"          % "2.4.3")
 addSbtPlugin("org.wartremover"   % "sbt-wartremover"        % "3.4.1")
